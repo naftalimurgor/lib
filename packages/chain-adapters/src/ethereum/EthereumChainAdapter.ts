@@ -256,7 +256,10 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
       value = erc20Balance
     }
 
-    const data = contractData ?? (await getErc20Data(to, value, contractAddress))
+    let data = ''
+    if (contractData) {
+      data =  await getErc20Data(to, value, contractAddress)
+    }
 
     const { data: gasLimit } = await this.providers.http.estimateGas({
       from,
