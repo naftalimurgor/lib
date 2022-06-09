@@ -1,15 +1,11 @@
-import { adapters } from '@shapeshiftoss/caip'
-import { toCAIP19 } from '@shapeshiftoss/caip/dist/caip19/caip19'
+import { adapters, CHAIN_NAMESPACE, CHAIN_REFERENCE, toAssetId } from '@shapeshiftoss/caip'
 import {
-  ChainTypes,
-  ContractTypes,
   FindAllMarketArgs,
   HistoryData,
   HistoryTimeframe,
   MarketCapResult,
   MarketData,
   MarketDataArgs,
-  NetworkTypes,
   PriceHistoryArgs
 } from '@shapeshiftoss/types'
 import { ChainId, Yearn } from '@yfi/sdk'
@@ -23,7 +19,7 @@ import { createRateLimiter } from '../utils/rateLimiters'
 import { ACCOUNT_HISTORIC_EARNINGS } from './gql-queries'
 import { VaultDayDataGQLResponse } from './yearn-types'
 
-const rateLimiter = createRateLimiter(RATE_LIMIT_THRESHOLDS_PER_MINUTE.YEARN)
+const rateLimiter = createRateLimiter(RATE_LIMIT_THRESHOLDS_PER_MINUTE.DEFAULT)
 
 type YearnVaultMarketCapServiceArgs = {
   yearnSdk: Yearn<ChainId>
@@ -43,7 +39,7 @@ export class YearnVaultMarketCapService implements MarketService {
     this.yearnSdk = args.yearnSdk
   }
 
-  findAll = async (args?: FindAllMarketArgs) => {
+  async findAll(args?: FindAllMarketArgs) {
     try {
       const argsToUse = { ...this.defaultGetByMarketCapArgs, ...args }
       const response = await rateLimiter(() => this.yearnSdk.vaults.get())
@@ -56,15 +52,15 @@ export class YearnVaultMarketCapService implements MarketService {
             : -1
         )
         .reduce((acc, yearnItem) => {
-          const caip19: string = toCAIP19({
-            chain: ChainTypes.Ethereum,
-            network: NetworkTypes.MAINNET,
-            contractType: ContractTypes.ERC20,
-            tokenId: yearnItem.address
+          const assetId = toAssetId({
+            chainNamespace: CHAIN_NAMESPACE.Ethereum,
+            chainReference: CHAIN_REFERENCE.EthereumMainnet,
+            assetNamespace: 'erc20',
+            assetReference: yearnItem.address
           })
           // if amountUsdc of a yearn asset is 0, the asset has not price or value
           if (bnOrZero(yearnItem.underlyingTokenBalance.amountUsdc).eq(0)) {
-            acc[caip19] = {
+            acc[assetId] = {
               price: '0',
               marketCap: '0',
               volume: '0',
@@ -110,7 +106,7 @@ export class YearnVaultMarketCapService implements MarketService {
                 .toNumber() || 0
           }
 
-          acc[caip19] = {
+          acc[assetId] = {
             price,
             marketCap,
             volume: volume.abs().toString(),
@@ -125,8 +121,8 @@ export class YearnVaultMarketCapService implements MarketService {
     }
   }
 
-  findByCaip19 = async ({ caip19 }: MarketDataArgs): Promise<MarketData | null> => {
-    const id = adapters.CAIP19ToYearn(caip19)
+  async findByAssetId({ assetId }: MarketDataArgs): Promise<MarketData | null> {
+    const id = adapters.assetIdToYearn(assetId)
     if (!id) return null
     try {
       const vaults = await rateLimiter(() => this.yearnSdk.vaults.get([id]))
@@ -186,7 +182,7 @@ export class YearnVaultMarketCapService implements MarketService {
       }
     } catch (e) {
       console.warn(e)
-      throw new Error('YearnMarketService(findByCaip19): error fetching market data')
+      throw new Error('YearnMarketService(findByAssetId): error fetching market data')
     }
   }
 
@@ -196,11 +192,11 @@ export class YearnVaultMarketCapService implements MarketService {
     return date
   }
 
-  findPriceHistoryByCaip19 = async ({
-    caip19,
+  async findPriceHistoryByAssetId({
+    assetId,
     timeframe
-  }: PriceHistoryArgs): Promise<HistoryData[]> => {
-    const id = adapters.CAIP19ToYearn(caip19)
+  }: PriceHistoryArgs): Promise<HistoryData[]> {
+    const id = adapters.assetIdToYearn(assetId)
     if (!id) return []
     try {
       let daysAgo

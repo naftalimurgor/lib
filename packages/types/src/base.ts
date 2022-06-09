@@ -1,7 +1,3 @@
-import { HDWallet } from '@shapeshiftoss/hdwallet-core'
-
-import { FeeDataKey, QuoteFeeData, SignTxInput } from './chain-adapters'
-
 /** Common */
 
 export type BIP44Params = {
@@ -12,18 +8,18 @@ export type BIP44Params = {
   index?: number
 }
 
-export enum ContractTypes {
-  ERC20 = 'ERC20',
-  ERC721 = 'ERC721',
-  OTHER = 'OTHER',
-  NONE = 'NONE'
-}
-
 export enum ChainTypes {
   Ethereum = 'ethereum',
   Bitcoin = 'bitcoin',
   Cosmos = 'cosmos',
   Osmosis = 'osmosis'
+}
+
+export enum KnownChainIds {
+  EthereumMainnet = 'eip155:1',
+  BitcoinMainnet = 'bip122:000000000019d6689c085ae165831e93',
+  CosmosMainnet = 'cosmos:cosmoshub-4',
+  OsmosisMainnet = 'cosmos:osmosis-1'
 }
 
 export enum NetworkTypes {
@@ -35,6 +31,11 @@ export enum NetworkTypes {
   COSMOSHUB_VEGA = 'COSMOSHUB_VEGA',
   OSMOSIS_MAINNET = 'OSMOSIS_MAINNET',
   OSMOSIS_TESTNET = 'OSMOSIS_TESTNET'
+}
+
+export enum WithdrawType {
+  DELAYED,
+  INSTANT
 }
 
 export enum UtxoAccountType {
@@ -51,165 +52,29 @@ export enum AssetDataSource {
 }
 
 // asset-service
-
-type AbstractAsset = {
-  caip19: string
-  caip2: string
-  chain: ChainTypes
+export type Asset = {
+  assetId: string
+  chainId: string
+  /** @deprecated: do not use. This will be removed once consumers have handled it */
+  chain?: ChainTypes
   description?: string
   isTrustedDescription?: boolean
-  dataSource: AssetDataSource
-  network: NetworkTypes
+  /** @deprecated: do not use. This will be removed once consumers have handled it */
+  network?: NetworkTypes
   symbol: string
   name: string
   precision: number
-  slip44: number
   color: string
-  secondaryColor: string
   icon: string
   explorer: string
   explorerTxLink: string
   explorerAddressLink: string
-  sendSupport: boolean
-  receiveSupport: boolean
 }
-
-type OmittedTokenAssetFields =
-  | 'chain'
-  | 'network'
-  | 'slip44'
-  | 'explorer'
-  | 'explorerTxLink'
-  | 'explorerAddressLink'
-type TokenAssetFields = {
-  tokenId: string
-  contractType: ContractTypes
-}
-export type TokenAsset = Omit<AbstractAsset, OmittedTokenAssetFields> & TokenAssetFields
-export type BaseAsset = AbstractAsset & { tokens?: TokenAsset[] }
-export type Asset = AbstractAsset & Partial<TokenAssetFields>
 
 // swapper
-
+// TODO remove this once web is using the type from swapper
 export enum SwapperType {
   Zrx = '0x',
-  Thorchain = 'Thorchain'
-}
-
-export type SwapSource = {
-  name: string
-  proportion: string
-}
-
-export interface MinMaxOutput {
-  minimum: string
-  maximum: string
-  minimumPrice?: string
-}
-
-export type QuoteResponse = {
-  price: string
-  guaranteedPrice: string
-  to: string
-  data?: string
-  value?: string
-  gas?: string
-  estimatedGas?: string
-  gasPrice?: string
-  protocolFee?: string
-  minimumProtocolFee?: string
-  buyTokenAddress?: string
-  sellTokenAddress?: string
-  buyAmount?: string
-  sellAmount?: string
-  allowanceTarget?: string
-  sources?: Array<SwapSource>
-}
-
-export type ThorVaultInfo = {
-  routerContractAddress?: string
-  vaultAddress: string
-  timestamp: string
-}
-
-export type BuildThorTradeOutput = SignTxInput<unknown> & ThorVaultInfo
-
-export type Quote<C extends ChainTypes, S extends SwapperType> = {
-  success: boolean
-  statusCode?: number
-  statusReason?: string
-  sellAssetAccountId?: string
-  buyAssetAccountId?: string
-  sellAsset: Asset
-  buyAsset: Asset
-  feeData?: QuoteFeeData<C, S>
-  rate?: string
-  depositAddress?: string // this is dex contract address for eth swaps
-  receiveAddress?: string
-  buyAmount?: string
-  sellAmount?: string
-  minimum?: string | null
-  maximum?: string | null
-  guaranteedPrice?: string
-  slipScore?: string
-  txData?: string
-  value?: string
-  allowanceContract?: string
-  allowanceGrantRequired?: boolean
-  slippage?: string
-  priceImpact?: string
-  orderId?: string
-  sources?: Array<SwapSource>
-  timestamp?: number
-}
-
-export type GetQuoteInput = {
-  sellAsset: Asset
-  buyAsset: Asset
-  sellAmount?: string
-  buyAmount?: string
-  sellAssetAccountId?: string
-  buyAssetAccountId?: string
-  slippage?: string
-  priceImpact?: string
-  sendMax?: boolean
-  minimumPrice?: string
-  minimum?: string
-}
-
-export type BuildQuoteTxInput = {
-  input: GetQuoteInput
-  wallet: HDWallet
-}
-
-export type ExecQuoteInput<C extends ChainTypes, S extends SwapperType> = {
-  quote: Quote<C, S>
-  wallet: HDWallet
-}
-
-export type ExecQuoteOutput = {
-  txid: string
-}
-
-export type ApprovalNeededInput<C extends ChainTypes, S extends SwapperType> = {
-  quote: Quote<C, S>
-  wallet: HDWallet
-}
-
-export type ApprovalNeededOutput = {
-  approvalNeeded: boolean
-  gas?: string
-  gasPrice?: string
-}
-
-export type ApproveInfiniteInput<C extends ChainTypes, S extends SwapperType> = {
-  quote: Quote<C, S>
-  wallet: HDWallet
-}
-
-export type SendMaxAmountInput = {
-  wallet: HDWallet
-  quote: Quote<ChainTypes, SwapperType>
-  sellAssetAccountId: string
-  feeEstimateKey?: FeeDataKey // fee estimate speed
+  Thorchain = 'Thorchain',
+  Test = 'Test'
 }

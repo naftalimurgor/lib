@@ -1,8 +1,16 @@
 import { Contract } from '@ethersproject/contracts'
-import { CAIP2, caip2, caip19 } from '@shapeshiftoss/caip'
-import { bip32ToAddressNList, ETHSignTx, ETHWallet } from '@shapeshiftoss/hdwallet-core'
-import { BIP44Params, chainAdapters, ChainTypes, NetworkTypes } from '@shapeshiftoss/types'
-import { ethereum } from '@shapeshiftoss/unchained-client'
+import {
+  ASSET_REFERENCE,
+  AssetId,
+  CHAIN_NAMESPACE,
+  ChainId,
+  fromAssetId,
+  fromChainId,
+  toAssetId
+} from '@shapeshiftoss/caip'
+import { bip32ToAddressNList, ETHSignTx, ETHWallet, HDWallet } from '@shapeshiftoss/hdwallet-core'
+import { BIP44Params, chainAdapters, ChainTypes } from '@shapeshiftoss/types'
+import * as unchained from '@shapeshiftoss/unchained-client'
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import WAValidator from 'multicoin-address-validator'
@@ -10,22 +18,17 @@ import { numberToHex } from 'web3-utils'
 
 import { ChainAdapter as IChainAdapter } from '../api'
 import { ErrorHandler } from '../error/ErrorHandler'
-import {
-  bnOrZero,
-  getContractType,
-  getStatus,
-  getType,
-  toPath,
-  toRootDerivationPath
-} from '../utils'
+import { getAssetNamespace, getStatus, getType, toPath, toRootDerivationPath } from '../utils'
+import { bn, bnOrZero } from '../utils/bignumber'
 import erc20Abi from './erc20Abi.json'
 
 export interface ChainAdapterArgs {
   providers: {
-    http: ethereum.api.V1Api
-    ws: ethereum.ws.Client
+    http: unchained.ethereum.V1Api
+    ws: unchained.ws.Client<unchained.ethereum.EthereumTx>
   }
-  chainId?: CAIP2
+  chainId?: ChainId
+  rpcUrl: string
 }
 
 async function getErc20Data(to: string, value: string, contractAddress?: string) {
@@ -36,23 +39,25 @@ async function getErc20Data(to: string, value: string, contractAddress?: string)
 }
 
 export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
+  private readonly chainId: ChainId = 'eip155:1'
   private readonly providers: {
-    http: ethereum.api.V1Api
-    ws: ethereum.ws.Client
+    http: unchained.ethereum.V1Api
+    ws: unchained.ws.Client<unchained.ethereum.EthereumTx>
   }
+
+  private parser: unchained.ethereum.TransactionParser
+
   public static readonly defaultBIP44Params: BIP44Params = {
     purpose: 44,
     coinType: 60,
     accountNumber: 0
   }
 
-  private readonly chainId: CAIP2 = 'eip155:1'
-
   constructor(args: ChainAdapterArgs) {
     if (args.chainId) {
       try {
-        const { chain } = caip2.fromCAIP2(args.chainId)
-        if (chain !== ChainTypes.Ethereum) {
+        const { chainNamespace } = fromChainId(args.chainId)
+        if (chainNamespace !== CHAIN_NAMESPACE.Ethereum) {
           throw new Error()
         }
         this.chainId = args.chainId
@@ -60,43 +65,50 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
         throw new Error(`The ChainID ${args.chainId} is not supported`)
       }
     }
+
     this.providers = args.providers
+    this.parser = new unchained.ethereum.TransactionParser({
+      chainId: this.chainId,
+      rpcUrl: args.rpcUrl
+    })
   }
 
   getType(): ChainTypes.Ethereum {
     return ChainTypes.Ethereum
   }
 
-  getCaip2(): CAIP2 {
+  getChainId(): ChainId {
     return this.chainId
   }
 
-  getChainId(): CAIP2 {
-    return this.chainId
+  getFeeAssetId(): AssetId {
+    return 'eip155:1/slip44:60'
   }
 
   async getAccount(pubkey: string): Promise<chainAdapters.Account<ChainTypes.Ethereum>> {
     try {
-      const caip = this.getCaip2()
-      const { chain, network } = caip2.fromCAIP2(caip)
+      const chainId = this.getChainId()
       const { data } = await this.providers.http.getAccount({ pubkey })
 
       const balance = bnOrZero(data.balance).plus(bnOrZero(data.unconfirmedBalance))
 
       return {
         balance: balance.toString(),
-        caip2: caip,
-        caip19: caip19.toCAIP19({ chain, network }),
+        chainId,
+        assetId: toAssetId({
+          chainId,
+          assetNamespace: 'slip44',
+          assetReference: ASSET_REFERENCE.Ethereum
+        }),
         chain: ChainTypes.Ethereum,
         chainSpecific: {
           nonce: data.nonce,
           tokens: data.tokens.map((token) => ({
             balance: token.balance,
-            caip19: caip19.toCAIP19({
-              chain,
-              network,
-              contractType: getContractType(token.type),
-              tokenId: token.contract
+            assetId: toAssetId({
+              chainId,
+              assetNamespace: getAssetNamespace(token.type),
+              assetReference: token.contract
             })
           }))
         },
@@ -111,27 +123,47 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
     return { ...ChainAdapter.defaultBIP44Params, ...params }
   }
 
-  async getTxHistory({
-    pubkey
-  }: ethereum.api.V1ApiGetTxHistoryRequest): Promise<
-    chainAdapters.TxHistoryResponse<ChainTypes.Ethereum>
-  > {
-    try {
-      const { data } = await this.providers.http.getTxHistory({ pubkey })
+  async getTxHistory(
+    input: chainAdapters.TxHistoryInput
+  ): Promise<chainAdapters.TxHistoryResponse<ChainTypes.Ethereum>> {
+    const { data } = await this.providers.http.getTxHistory({
+      pubkey: input.pubkey,
+      pageSize: input.pageSize,
+      cursor: input.cursor
+    })
 
-      return {
-        page: data.page,
-        totalPages: data.totalPages,
-        transactions: data.transactions.map((tx) => ({
-          ...tx,
-          chain: ChainTypes.Ethereum,
-          network: NetworkTypes.MAINNET,
-          symbol: 'ETH'
-        })),
-        txs: data.txs
-      }
-    } catch (err) {
-      return ErrorHandler(err)
+    const txs = await Promise.all(
+      data.txs.map(async (tx) => {
+        const parsedTx = await this.parser.parse(tx, input.pubkey)
+
+        return {
+          address: input.pubkey,
+          blockHash: parsedTx.blockHash,
+          blockHeight: parsedTx.blockHeight,
+          blockTime: parsedTx.blockTime,
+          chainId: parsedTx.chainId,
+          chain: this.getType(),
+          confirmations: parsedTx.confirmations,
+          txid: parsedTx.txid,
+          fee: parsedTx.fee,
+          status: getStatus(parsedTx.status),
+          tradeDetails: parsedTx.trade,
+          transfers: parsedTx.transfers.map((transfer) => ({
+            assetId: transfer.assetId,
+            from: transfer.from,
+            to: transfer.to,
+            type: getType(transfer.type),
+            value: transfer.totalValue
+          })),
+          data: parsedTx.data
+        }
+      })
+    )
+
+    return {
+      cursor: data.cursor ?? '',
+      pubkey: input.pubkey,
+      transactions: txs
     }
   }
 
@@ -143,7 +175,13 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
         to,
         wallet,
         bip44Params = ChainAdapter.defaultBIP44Params,
-        chainSpecific: { erc20ContractAddress, gasPrice, gasLimit },
+        chainSpecific: {
+          erc20ContractAddress,
+          gasPrice,
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas
+        },
         sendMax = false
       } = tx
 
@@ -165,15 +203,17 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
         if (isErc20Send) {
           if (!erc20ContractAddress) throw new Error('no token address')
           const erc20Balance = account?.chainSpecific?.tokens?.find((token) => {
-            return caip19.fromCAIP19(token.caip19).tokenId === erc20ContractAddress.toLowerCase()
+            return fromAssetId(token.assetId).assetReference === erc20ContractAddress.toLowerCase()
           })?.balance
           if (!erc20Balance) throw new Error('no balance')
           tx.value = erc20Balance
         } else {
-          if (new BigNumber(account.balance).isZero()) throw new Error('no balance')
+          if (bnOrZero(account.balance).isZero()) throw new Error('no balance')
 
-          const fee = new BigNumber(gasPrice).times(gasLimit)
-          tx.value = new BigNumber(account.balance).minus(fee).toString()
+          // (The type system guarantees that either maxFeePerGas or gasPrice will be undefined, but not both)
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const fee = bnOrZero((maxFeePerGas ?? gasPrice)!).times(bnOrZero(gasLimit))
+          tx.value = bnOrZero(account.balance).minus(fee).toString()
         }
       }
       const data = await getErc20Data(to, tx?.value, erc20ContractAddress)
@@ -185,8 +225,89 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
         chainId: 1, // TODO: implement for multiple chains
         data,
         nonce: numberToHex(chainSpecific.nonce),
-        gasPrice: numberToHex(gasPrice),
-        gasLimit: numberToHex(gasLimit)
+        gasLimit: numberToHex(gasLimit),
+        ...(gasPrice !== undefined
+          ? {
+              gasPrice: numberToHex(gasPrice)
+            }
+          : {
+              // (The type system guarantees that on this branch both of these will be set)
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              maxFeePerGas: numberToHex(maxFeePerGas!),
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              maxPriorityFeePerGas: numberToHex(maxPriorityFeePerGas!)
+            })
+      }
+      return { txToSign }
+    } catch (err) {
+      return ErrorHandler(err)
+    }
+  }
+
+  async buildCustomTx(
+    tx: {
+      wallet: HDWallet
+      bip44Params: BIP44Params
+      to: string
+      data: string
+      value: string
+      gasLimit: string
+    } & (
+      | {
+          /** types from ethSignTx in hdwallet */
+          gasPrice: string
+          maxFeePerGas?: never
+          maxPriorityFeePerGas?: never
+        }
+      | {
+          gasPrice?: never
+          maxFeePerGas: string
+          maxPriorityFeePerGas: string
+        }
+    )
+  ): Promise<{
+    txToSign: ETHSignTx
+  }> {
+    try {
+      const {
+        wallet,
+        bip44Params = ChainAdapter.defaultBIP44Params,
+        to,
+        data,
+        value,
+        gasPrice,
+        gasLimit,
+        maxFeePerGas,
+        maxPriorityFeePerGas
+      } = tx
+
+      const path = toPath(bip44Params)
+      const addressNList = bip32ToAddressNList(path)
+
+      const from = await this.getAddress({ bip44Params, wallet })
+      const { chainSpecific } = await this.getAccount(from)
+
+      const gasInfo = gasPrice
+        ? {
+            gasPrice: numberToHex(gasPrice)
+          }
+        : {
+            // (The type system guarantees that on this branch both of these will be set)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            maxFeePerGas: numberToHex(maxFeePerGas!),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            maxPriorityFeePerGas: numberToHex(maxPriorityFeePerGas!)
+          }
+
+      const txToSign: ETHSignTx = {
+        addressNList,
+        value,
+        to,
+        chainId: 1, // TODO: implement for multiple chains
+        data,
+        nonce: numberToHex(chainSpecific.nonce),
+        gasLimit: numberToHex(gasLimit),
+        ...gasInfo
       }
       return { txToSign }
     } catch (err) {
@@ -249,8 +370,8 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
     if (sendMax && isErc20Send && contractAddress) {
       const account = await this.getAccount(from)
       const erc20Balance = account?.chainSpecific?.tokens?.find((token) => {
-        const { tokenId } = caip19.fromCAIP19(token.caip19)
-        return tokenId === contractAddress.toLowerCase()
+        const { assetReference } = fromAssetId(token.assetId)
+        return assetReference === contractAddress.toLowerCase()
       })?.balance
       if (!erc20Balance) throw new Error('no balance')
       value = erc20Balance
@@ -270,61 +391,55 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
 
     const feeData = (await this.providers.http.getGasFees()).data
     const normalizationConstants = {
-      instant: String(new BigNumber(fees.instant).dividedBy(fees.fast)),
-      average: String(1),
-      slow: String(new BigNumber(fees.low).dividedBy(fees.fast))
+      fast: bnOrZero(bn(fees.fast).dividedBy(fees.standard)),
+      average: bn(1),
+      slow: bnOrZero(bn(fees.low).dividedBy(fees.standard))
     }
 
     return {
       fast: {
-        txFee: new BigNumber(fees.instant).times(gasLimit).toPrecision(),
+        txFee: bnOrZero(bn(fees.fast).times(gasLimit)).toPrecision(),
         chainSpecific: {
           gasLimit,
-          gasPrice: String(fees.instant),
-          maxFeePerGas: String(
-            new BigNumber(feeData.maxFeePerGas)
-              .times(normalizationConstants.instant)
-              .toFixed(0, BigNumber.ROUND_CEIL)
-          ),
-          maxPriorityFeePerGas: String(
-            new BigNumber(feeData.maxPriorityFeePerGas)
-              .times(normalizationConstants.instant)
-              .toFixed(0, BigNumber.ROUND_CEIL)
-          )
+          gasPrice: bnOrZero(fees.fast).toString(),
+          maxFeePerGas: bnOrZero(feeData.maxFeePerGas)
+            .times(normalizationConstants.fast)
+            .toFixed(0, BigNumber.ROUND_CEIL)
+            .toString(),
+          maxPriorityFeePerGas: bnOrZero(feeData.maxPriorityFeePerGas)
+            .times(normalizationConstants.fast)
+            .toFixed(0, BigNumber.ROUND_CEIL)
+            .toString()
         }
       },
       average: {
-        txFee: new BigNumber(fees.fast).times(gasLimit).toPrecision(),
+        txFee: bnOrZero(bn(fees.standard).times(gasLimit)).toPrecision(),
         chainSpecific: {
           gasLimit,
-          gasPrice: String(fees.fast),
-          maxFeePerGas: String(
-            new BigNumber(feeData.maxFeePerGas)
-              .times(normalizationConstants.average)
-              .toFixed(0, BigNumber.ROUND_CEIL)
-          ),
-          maxPriorityFeePerGas: String(
-            new BigNumber(feeData.maxPriorityFeePerGas)
-              .times(normalizationConstants.average)
-              .toFixed(0, BigNumber.ROUND_CEIL)
-          )
+          gasPrice: bnOrZero(fees.standard).toString(),
+          maxFeePerGas: bnOrZero(feeData.maxFeePerGas)
+            .times(normalizationConstants.average)
+            .toFixed(0, BigNumber.ROUND_CEIL)
+            .toString(),
+          maxPriorityFeePerGas: bnOrZero(feeData.maxPriorityFeePerGas)
+            .times(normalizationConstants.average)
+            .toFixed(0, BigNumber.ROUND_CEIL)
+            .toString()
         }
       },
       slow: {
-        txFee: new BigNumber(fees.low).times(gasLimit).toPrecision(),
+        txFee: bnOrZero(bn(fees.low).times(gasLimit)).toPrecision(),
         chainSpecific: {
           gasLimit,
-          gasPrice: String(fees.low),
-          maxFeePerGas: String(
-            new BigNumber(feeData.maxFeePerGas)
-              .times(normalizationConstants.slow)
-              .toFixed(0, BigNumber.ROUND_CEIL)
-          ),
-          maxPriorityFeePerGas: String(
-            new BigNumber(feeData.maxPriorityFeePerGas)
-              .times(normalizationConstants.slow)
-              .toFixed(0, BigNumber.ROUND_CEIL)
-          )
+          gasPrice: bnOrZero(fees.low).toString(),
+          maxFeePerGas: bnOrZero(feeData.maxFeePerGas)
+            .times(normalizationConstants.slow)
+            .toFixed(0, BigNumber.ROUND_CEIL)
+            .toString(),
+          maxPriorityFeePerGas: bnOrZero(feeData.maxPriorityFeePerGas)
+            .times(normalizationConstants.slow)
+            .toFixed(0, BigNumber.ROUND_CEIL)
+            .toString()
         }
       }
     }
@@ -356,7 +471,7 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
 
   async subscribeTxs(
     input: chainAdapters.SubscribeTxsInput,
-    onMessage: (msg: chainAdapters.SubscribeTxsMessage<ChainTypes.Ethereum>) => void,
+    onMessage: (msg: chainAdapters.Transaction<ChainTypes.Ethereum>) => void,
     onError: (err: chainAdapters.SubscribeError) => void
   ): Promise<void> {
     const { wallet, bip44Params = ChainAdapter.defaultBIP44Params } = input
@@ -367,34 +482,29 @@ export class ChainAdapter implements IChainAdapter<ChainTypes.Ethereum> {
     await this.providers.ws.subscribeTxs(
       subscriptionId,
       { topic: 'txs', addresses: [address] },
-      (msg) => {
-        const transfers = msg.transfers.map<chainAdapters.TxTransfer>((transfer) => ({
-          caip19: transfer.caip19,
-          from: transfer.from,
-          to: transfer.to,
-          type: getType(transfer.type),
-          value: transfer.totalValue
-        }))
+      async (msg) => {
+        const tx = await this.parser.parse(msg.data, msg.address)
 
         onMessage({
-          address: msg.address,
-          blockHash: msg.blockHash,
-          blockHeight: msg.blockHeight,
-          blockTime: msg.blockTime,
-          caip2: msg.caip2,
+          address: tx.address,
+          blockHash: tx.blockHash,
+          blockHeight: tx.blockHeight,
+          blockTime: tx.blockTime,
+          chainId: tx.chainId,
           chain: ChainTypes.Ethereum,
-          confirmations: msg.confirmations,
-          fee: msg.fee,
-          status: getStatus(msg.status),
-          tradeDetails: msg.trade,
-          transfers,
-          txid: msg.txid,
-          ...(msg.data && {
-            data: {
-              method: msg.data.method,
-              parser: msg.data.parser ?? 'unknown'
-            }
-          })
+          confirmations: tx.confirmations,
+          fee: tx.fee,
+          status: getStatus(tx.status),
+          tradeDetails: tx.trade,
+          transfers: tx.transfers.map((transfer) => ({
+            assetId: transfer.assetId,
+            from: transfer.from,
+            to: transfer.to,
+            type: getType(transfer.type),
+            value: transfer.totalValue
+          })),
+          txid: tx.txid,
+          data: tx.data
         })
       },
       (err) => onError({ message: err.message })

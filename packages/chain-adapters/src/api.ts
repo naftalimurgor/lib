@@ -1,5 +1,5 @@
-import { CAIP2 } from '@shapeshiftoss/caip'
-import { BIP44Params, chainAdapters, ChainTypes } from '@shapeshiftoss/types'
+import { AssetId, ChainId } from '@shapeshiftoss/caip'
+import { BIP44Params, chainAdapters, ChainTypes, UtxoAccountType } from '@shapeshiftoss/types'
 
 export type ChainAdapter<T extends ChainTypes> = {
   /**
@@ -7,9 +7,19 @@ export type ChainAdapter<T extends ChainTypes> = {
    */
   getType(): T
 
-  getCaip2(): CAIP2
+  getChainId(): ChainId
 
-  getChainId(): CAIP2
+  /**
+   * Base fee asset used to pay for txs on a given chain
+   */
+  getFeeAssetId(): AssetId
+
+  /**
+   * Get the supported account types for an adapter
+   * For UTXO coins, that's the list of UTXO account types
+   * For other networks, this is unimplemented, and left as a responsibility of the consumer.
+   */
+  getSupportedAccountTypes?(): Array<UtxoAccountType>
   /**
    * Get the balance of an address
    */
@@ -43,7 +53,7 @@ export type ChainAdapter<T extends ChainTypes> = {
 
   subscribeTxs(
     input: chainAdapters.SubscribeTxsInput,
-    onMessage: (msg: chainAdapters.SubscribeTxsMessage<T>) => void,
+    onMessage: (msg: chainAdapters.Transaction<T>) => void,
     onError?: (err: chainAdapters.SubscribeError) => void
   ): Promise<void>
 

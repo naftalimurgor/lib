@@ -1,5 +1,4 @@
 import { adapters } from '@shapeshiftoss/caip'
-import { fromCAIP19 } from '@shapeshiftoss/caip/dist/caip19/caip19'
 import {
   FindAllMarketArgs,
   HistoryData,
@@ -28,7 +27,7 @@ export class CoinCapMarketService implements MarketService {
     count: 2500
   }
 
-  findAll = async (args?: FindAllMarketArgs) => {
+  async findAll(args?: FindAllMarketArgs) {
     const argsToUse = { ...this.defaultGetByMarketCapArgs, ...args }
     const { count } = argsToUse
     const perPage = count > 250 ? 250 : count
@@ -52,18 +51,21 @@ export class CoinCapMarketService implements MarketService {
         .reduce((acc, cur) => {
           const { id } = cur
           try {
-            const caip19 = adapters.coincapToCAIP19(id)
-            if (!caip19) return acc
+            const assetId = adapters.coincapToAssetId(id)
+            if (!assetId) return acc
             const curWithoutId = omit(cur, 'id') // don't leak this through to clients
-            acc[caip19] = {
+            acc[assetId] = {
               price: curWithoutId.priceUsd.toString(),
               marketCap: curWithoutId.marketCapUsd.toString(),
               volume: curWithoutId.volumeUsd24Hr.toString(),
-              changePercent24Hr: parseFloat(curWithoutId.changePercent24Hr)
+              changePercent24Hr: parseFloat(curWithoutId.changePercent24Hr),
+              supply: curWithoutId.supply,
+              maxSupply: curWithoutId.maxSupply?.toString()
             }
+
             return acc
           } catch {
-            return acc // no caip found, we don't support this asset
+            return acc // no AssetId found, we don't support this asset
           }
         }, {} as MarketCapResult)
     } catch (e) {
@@ -71,11 +73,10 @@ export class CoinCapMarketService implements MarketService {
     }
   }
 
-  findByCaip19 = async ({ caip19 }: MarketDataArgs): Promise<MarketData | null> => {
-    if (!adapters.CAIP19ToCoinCap(caip19)) return null
+  async findByAssetId({ assetId }: MarketDataArgs): Promise<MarketData | null> {
+    if (!adapters.assetIdToCoinCap(assetId)) return null
     try {
-      const { tokenId } = fromCAIP19(caip19)
-      const id = tokenId ? 'ethereum' : adapters.CAIP19ToCoinCap(caip19)
+      const id = adapters.assetIdToCoinCap(assetId)
 
       const { data } = await axios.get(`${this.baseUrl}/assets/${id}`)
 
@@ -84,21 +85,22 @@ export class CoinCapMarketService implements MarketService {
         price: marketData.priceUsd,
         marketCap: marketData.marketCapUsd,
         changePercent24Hr: parseFloat(marketData.changePercent24Hr),
-        volume: marketData.volumeUsd24Hr
+        volume: marketData.volumeUsd24Hr,
+        supply: marketData.supply,
+        maxSupply: marketData.maxSupply?.toString()
       }
     } catch (e) {
       console.warn(e)
-      throw new Error('MarketService(findByCaip19): error fetching market data')
+      throw new Error('MarketService(findByAssetId): error fetching market data')
     }
   }
 
-  findPriceHistoryByCaip19 = async ({
-    caip19,
+  async findPriceHistoryByAssetId({
+    assetId,
     timeframe
-  }: PriceHistoryArgs): Promise<HistoryData[]> => {
-    if (!adapters.CAIP19ToCoinCap(caip19)) return []
-    const { tokenId } = fromCAIP19(caip19)
-    const id = tokenId ? 'ethereum' : adapters.CAIP19ToCoinCap(caip19)
+  }: PriceHistoryArgs): Promise<HistoryData[]> {
+    if (!adapters.assetIdToCoinCap(assetId)) return []
+    const id = adapters.assetIdToCoinCap(assetId)
 
     const end = dayjs().startOf('minute')
     let start
@@ -135,8 +137,7 @@ export class CoinCapMarketService implements MarketService {
     try {
       const from = start.valueOf()
       const to = end.valueOf()
-      const contract = tokenId ? `/contract/${tokenId}` : ''
-      const url = `${this.baseUrl}/assets/${id}${contract}/history`
+      const url = `${this.baseUrl}/assets/${id}/history`
       type CoincapHistoryData = {
         data: {
           priceUsd: number
@@ -168,7 +169,7 @@ export class CoinCapMarketService implements MarketService {
       }, [])
     } catch (e) {
       console.warn(e)
-      throw new Error('MarketService(findPriceHistoryByCaip19): error fetching price history')
+      throw new Error('MarketService(findPriceHistoryByAssetId): error fetching price history')
     }
   }
 }

@@ -1,15 +1,17 @@
-import { CAIP2, caip2 } from '@shapeshiftoss/caip'
+import { ChainId, isChainId } from '@shapeshiftoss/caip'
 import { ChainTypes } from '@shapeshiftoss/types'
 import * as unchained from '@shapeshiftoss/unchained-client'
 
 import { ChainAdapter } from './api'
 import * as bitcoin from './bitcoin'
 import * as cosmos from './cosmossdk/cosmos'
+import * as osmosis from './cosmossdk/osmosis'
 import * as ethereum from './ethereum'
 
 export type UnchainedUrl = {
   httpUrl: string
   wsUrl: string
+  rpcUrl?: string
 }
 export type UnchainedUrls = Partial<Record<ChainTypes, UnchainedUrl>>
 
@@ -22,20 +24,25 @@ export class ChainAdapterManager {
       throw new Error('Blockchain urls required')
     }
     ;(Object.entries(unchainedUrls) as Array<[keyof UnchainedUrls, UnchainedUrl]>).forEach(
-      ([type, { httpUrl, wsUrl }]) => {
+      ([type, { httpUrl, wsUrl, rpcUrl }]) => {
         switch (type) {
           case ChainTypes.Ethereum: {
-            const http = new unchained.ethereum.api.V1Api(
-              new unchained.ethereum.api.Configuration({ basePath: httpUrl })
+            if (!rpcUrl) throw new Error('rpcUrl required')
+
+            const http = new unchained.ethereum.V1Api(
+              new unchained.ethereum.Configuration({ basePath: httpUrl })
             )
-            const ws = new unchained.ethereum.ws.Client(wsUrl)
-            return this.addChain(type, () => new ethereum.ChainAdapter({ providers: { http, ws } }))
+            const ws = new unchained.ws.Client<unchained.ethereum.EthereumTx>(wsUrl)
+            return this.addChain(
+              type,
+              () => new ethereum.ChainAdapter({ providers: { http, ws }, rpcUrl })
+            )
           }
           case ChainTypes.Bitcoin: {
-            const http = new unchained.bitcoin.api.V1Api(
-              new unchained.bitcoin.api.Configuration({ basePath: httpUrl })
+            const http = new unchained.bitcoin.V1Api(
+              new unchained.bitcoin.Configuration({ basePath: httpUrl })
             )
-            const ws = new unchained.bitcoin.ws.Client(wsUrl)
+            const ws = new unchained.ws.Client<unchained.bitcoin.BitcoinTx>(wsUrl)
             return this.addChain(
               type,
               () => new bitcoin.ChainAdapter({ providers: { http, ws }, coinName: 'Bitcoin' })
@@ -43,12 +50,24 @@ export class ChainAdapterManager {
           }
 
           case ChainTypes.Cosmos: {
-            const http = new unchained.cosmos.api.V1Api(
-              new unchained.cosmos.api.Configuration({ basePath: httpUrl })
+            const http = new unchained.cosmos.V1Api(
+              new unchained.cosmos.Configuration({ basePath: httpUrl })
             )
+            const ws = new unchained.ws.Client<unchained.cosmos.Tx>(wsUrl)
             return this.addChain(
               type,
-              () => new cosmos.ChainAdapter({ providers: { http }, coinName: 'Cosmos' })
+              () => new cosmos.ChainAdapter({ providers: { http, ws }, coinName: 'Cosmos' })
+            )
+          }
+
+          case ChainTypes.Osmosis: {
+            const http = new unchained.osmosis.V1Api(
+              new unchained.osmosis.Configuration({ basePath: httpUrl })
+            )
+            const ws = new unchained.ws.Client<unchained.osmosis.Tx>(wsUrl)
+            return this.addChain(
+              type,
+              () => new osmosis.ChainAdapter({ providers: { http, ws }, coinName: 'Osmosis' })
             )
           }
           default:
@@ -73,6 +92,16 @@ export class ChainAdapterManager {
       throw new Error('Parameter validation error')
     }
     this.supported.set(chain, factory)
+  }
+
+  removeChain<T extends ChainTypes>(chain: T): void {
+    if (!Object.values(ChainTypes).includes(chain)) {
+      throw new Error(`ChainAdapterManager: invalid chain ${chain}`)
+    }
+    if (!this.supported.has(chain)) {
+      throw new Error(`ChainAdapterManager: chain ${chain} not registered`)
+    }
+    this.supported.delete(chain)
   }
 
   getSupportedChains(): Array<ChainTypes> {
@@ -104,14 +133,14 @@ export class ChainAdapterManager {
     return adapter as ChainAdapter<T>
   }
 
-  async byChainId(chainId: CAIP2) {
+  byChainId(chainId: ChainId) {
     // this function acts like a validation function and throws if the check doesn't pass
-    caip2.isCAIP2(chainId)
+    isChainId(chainId)
 
     for (const [chain] of this.supported) {
       // byChain calls the factory function so we need to call it to create the instances
       const adapter = this.byChain(chain)
-      if ((await adapter.getCaip2()) === chainId) return adapter
+      if (adapter.getChainId() === chainId) return adapter
     }
 
     throw new Error(`Chain [${chainId}] is not supported`)

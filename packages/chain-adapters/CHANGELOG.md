@@ -1,3 +1,408 @@
+# [@shapeshiftoss/chain-adapters-v5.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v5.0.0...@shapeshiftoss/chain-adapters-v5.0.1) (2022-06-08)
+
+# [@shapeshiftoss/chain-adapters-v5.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.8.1...@shapeshiftoss/chain-adapters-v5.0.0) (2022-06-08)
+
+
+### Features
+
+* update btc/eth to use historical tx history and new ws payloads ([#674](https://github.com/shapeshift/lib/issues/674)) ([0189e3b](https://github.com/shapeshift/lib/commit/0189e3b4dd5a3b998ddf285e761ae11dea72f94b))
+
+
+### BREAKING CHANGES
+
+* unchained-client and chain-adapters
+
+* revert pre release package versions
+
+* revert changes to no breaking packages
+
+* dependencies
+
+* pin package versions
+
+# [@shapeshiftoss/chain-adapters-v4.8.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.8.0...@shapeshiftoss/chain-adapters-v4.8.1) (2022-06-08)
+
+# [@shapeshiftoss/chain-adapters-v4.8.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.7.0...@shapeshiftoss/chain-adapters-v4.8.0) (2022-06-07)
+
+
+### Features
+
+* generic erc20 approve ([#731](https://github.com/shapeshift/lib/issues/731)) ([ec7f058](https://github.com/shapeshift/lib/commit/ec7f058f21a1c7b31345a2a901250ff589c625e9))
+
+# [@shapeshiftoss/chain-adapters-v4.7.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.6.0...@shapeshiftoss/chain-adapters-v4.7.0) (2022-06-03)
+
+
+### Features
+
+* **assetService:** consume normalization of Asset properties & use static data ([#746](https://github.com/shapeshift/lib/issues/746)) ([ca87bee](https://github.com/shapeshift/lib/commit/ca87bee46419a03d490a826b2b42c90b49cc3079))
+* consume normalization of Asset properties ([#745](https://github.com/shapeshift/lib/issues/745)) ([e4fb585](https://github.com/shapeshift/lib/commit/e4fb5855d897a61bdd275d02302df0315f7a9119))
+
+# [@shapeshiftoss/chain-adapters-v4.6.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.5.0...@shapeshiftoss/chain-adapters-v4.6.0) (2022-06-02)
+
+
+### Features
+
+* custom eth transactions ([#736](https://github.com/shapeshift/lib/issues/736)) ([609e745](https://github.com/shapeshift/lib/commit/609e74596784cd798ccc71ca2bce03d82903613c))
+
+# [@shapeshiftoss/chain-adapters-v4.5.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.4.0...@shapeshiftoss/chain-adapters-v4.5.0) (2022-06-01)
+
+
+### Features
+
+* thorchain memo support ([#716](https://github.com/shapeshift/lib/issues/716)) ([fe9762f](https://github.com/shapeshift/lib/commit/fe9762fd7656ef17d93885ff154a991978c3e93b))
+
+# [@shapeshiftoss/chain-adapters-v4.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.3.3...@shapeshiftoss/chain-adapters-v4.4.0) (2022-05-26)
+
+
+### Features
+
+* thorswapper initialize ([#703](https://github.com/shapeshift/lib/issues/703)) ([73cc081](https://github.com/shapeshift/lib/commit/73cc081b66cc58177415bf425f7899b289cc33af))
+
+# [@shapeshiftoss/chain-adapters-v4.3.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.3.2...@shapeshiftoss/chain-adapters-v4.3.3) (2022-05-25)
+
+# [@shapeshiftoss/chain-adapters-v4.3.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.3.1...@shapeshiftoss/chain-adapters-v4.3.2) (2022-05-24)
+
+
+### Bug Fixes
+
+* fix osmosis assets & parsing ([#689](https://github.com/shapeshift/lib/issues/689)) ([5360fba](https://github.com/shapeshift/lib/commit/5360fba40c050ef9e793b4b44ab5527cbf73d455))
+
+# [@shapeshiftoss/chain-adapters-v4.3.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.3.0...@shapeshiftoss/chain-adapters-v4.3.1) (2022-05-24)
+
+# [@shapeshiftoss/chain-adapters-v4.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.2.0...@shapeshiftoss/chain-adapters-v4.3.0) (2022-05-20)
+
+
+### Features
+
+* chain and asset utility functions ([#654](https://github.com/shapeshift/lib/issues/654)) ([4e12ce6](https://github.com/shapeshift/lib/commit/4e12ce6fd10cd8bf34e059e63c2a162fb6576932))
+
+# [@shapeshiftoss/chain-adapters-v4.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.1.0...@shapeshiftoss/chain-adapters-v4.2.0) (2022-05-19)
+
+
+### Features
+
+* **chain-adapters:** change byChainId to by synchronous ([#668](https://github.com/shapeshift/lib/issues/668)) ([5017672](https://github.com/shapeshift/lib/commit/50176724116f62dfcccd315d9215f326cc982d9f))
+
+# [@shapeshiftoss/chain-adapters-v4.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.0.1...@shapeshiftoss/chain-adapters-v4.1.0) (2022-05-18)
+
+
+### Features
+
+* osmosis adapter ([#664](https://github.com/shapeshift/lib/issues/664)) ([8bcdfd1](https://github.com/shapeshift/lib/commit/8bcdfd17a9902fb08239c4b4a2db3ae6b6e15183))
+
+# [@shapeshiftoss/chain-adapters-v4.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v4.0.0...@shapeshiftoss/chain-adapters-v4.0.1) (2022-05-18)
+
+# [@shapeshiftoss/chain-adapters-v4.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v3.0.4...@shapeshiftoss/chain-adapters-v4.0.0) (2022-05-18)
+
+
+### Performance Improvements
+
+* replace enums with dynamically derived object literals ([#656](https://github.com/shapeshift/lib/issues/656)) ([6d2d821](https://github.com/shapeshift/lib/commit/6d2d821318da9db4afec97b1247cf006a5fc42d2))
+
+
+### BREAKING CHANGES
+
+* the enum removal will need to be handled by consumers to use the new constants.
+
+* chore: remove toString() and associated comment
+
+* chore: remove string litirals
+
+* chore: optimise imports
+
+* chore: use string union for AssetNamespace
+
+* chore: update README
+
+# [@shapeshiftoss/chain-adapters-v3.0.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v3.0.3...@shapeshiftoss/chain-adapters-v3.0.4) (2022-05-17)
+
+# [@shapeshiftoss/chain-adapters-v3.0.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v3.0.2...@shapeshiftoss/chain-adapters-v3.0.3) (2022-05-17)
+
+# [@shapeshiftoss/chain-adapters-v3.0.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v3.0.1...@shapeshiftoss/chain-adapters-v3.0.2) (2022-05-13)
+
+
+### Bug Fixes
+
+* correct fee calculation for eth/erc20 sends ([#644](https://github.com/shapeshift/lib/issues/644)) ([0c75505](https://github.com/shapeshift/lib/commit/0c75505eebb51e9fa6a990e1f2a9cf822cbb2ae6))
+
+# [@shapeshiftoss/chain-adapters-v3.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v3.0.0...@shapeshiftoss/chain-adapters-v3.0.1) (2022-05-12)
+
+# [@shapeshiftoss/chain-adapters-v3.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.15.0...@shapeshiftoss/chain-adapters-v3.0.0) (2022-05-10)
+
+
+### Performance Improvements
+
+* **chainAdapters:** replace caip properties with their high-level counterparts ([#606](https://github.com/shapeshift/lib/issues/606)) ([49e8fef](https://github.com/shapeshift/lib/commit/49e8fefabb6eaaecb357ddc16e11ad2080eb3082))
+
+
+### BREAKING CHANGES
+
+* **chainAdapters:** updates chain adapters with caip-free types and vernacular.
+
+* cleanup unchained commit cherry-pick
+
+* Remove caip comment
+
+* bump chain-adapters version and regen yarn lock
+
+* chore: update yarn.lock
+
+* chore: update yarn.lock
+
+Co-authored-by: kaladinlight <35275952+kaladinlight@users.noreply.github.com>
+
+# [@shapeshiftoss/chain-adapters-v2.15.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.14.0...@shapeshiftoss/chain-adapters-v2.15.0) (2022-05-06)
+
+
+### Features
+
+* add getSupportedAccountTypes to specific ChainAdapters ([#611](https://github.com/shapeshift/lib/issues/611)) ([f7aa9da](https://github.com/shapeshift/lib/commit/f7aa9da827811dbb5f3a352d3fd40cb19c07bfd9))
+
+# [@shapeshiftoss/chain-adapters-v2.14.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.10...@shapeshiftoss/chain-adapters-v2.14.0) (2022-05-06)
+
+
+### Features
+
+* **caip:** flatten exports ([#560](https://github.com/shapeshift/lib/issues/560)) ([e326522](https://github.com/shapeshift/lib/commit/e3265223dca3c2126b2822395353f6650c4b0342))
+
+# [@shapeshiftoss/chain-adapters-v2.13.10](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.9...@shapeshiftoss/chain-adapters-v2.13.10) (2022-05-05)
+
+# [@shapeshiftoss/chain-adapters-v2.13.9](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.8...@shapeshiftoss/chain-adapters-v2.13.9) (2022-05-05)
+
+# [@shapeshiftoss/chain-adapters-v2.13.8](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.7...@shapeshiftoss/chain-adapters-v2.13.8) (2022-05-05)
+
+# [@shapeshiftoss/chain-adapters-v2.13.7](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.6...@shapeshiftoss/chain-adapters-v2.13.7) (2022-05-04)
+
+# [@shapeshiftoss/chain-adapters-v2.13.6](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.5...@shapeshiftoss/chain-adapters-v2.13.6) (2022-05-02)
+
+
+### Bug Fixes
+
+* removes 3 unnecessary api calls from zrxswapper.  ([#586](https://github.com/shapeshift/lib/issues/586)) ([57d59c8](https://github.com/shapeshift/lib/commit/57d59c8488cceb05cd5e0778b49690d0d2c97b68))
+
+# [@shapeshiftoss/chain-adapters-v2.13.5](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.4...@shapeshiftoss/chain-adapters-v2.13.5) (2022-05-02)
+
+
+### Bug Fixes
+
+* unbreak lib build ([#588](https://github.com/shapeshift/lib/issues/588)) ([bff0f3d](https://github.com/shapeshift/lib/commit/bff0f3d351f09ae9693b6b173782e8d8671ca3e4))
+* vscode tsconfig errors ([#577](https://github.com/shapeshift/lib/issues/577)) ([50138d0](https://github.com/shapeshift/lib/commit/50138d07b55b730f3bee68fae80414dc6578ee2a))
+
+# [@shapeshiftoss/chain-adapters-v2.13.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.3...@shapeshiftoss/chain-adapters-v2.13.4) (2022-04-26)
+
+
+### Bug Fixes
+
+* don't set amount on MsgWithdrawDelegationReward ([#563](https://github.com/shapeshift/lib/issues/563)) ([f45ac3e](https://github.com/shapeshift/lib/commit/f45ac3ef1f37781817f6db8eb45d241e157a014b))
+
+# [@shapeshiftoss/chain-adapters-v2.13.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.2...@shapeshiftoss/chain-adapters-v2.13.3) (2022-04-26)
+
+
+### Reverts
+
+* Revert "fix: cosmos-sdk/MsgWithdrawDelegationReward -> cosmos-sdk/MsgWithdrawDelegatorReward (#558)" (#561) ([d8c75e6](https://github.com/shapeshift/lib/commit/d8c75e69d86ea72f339a95ecdeb0f4a6f00c071f)), closes [#558](https://github.com/shapeshift/lib/issues/558) [#561](https://github.com/shapeshift/lib/issues/561)
+
+# [@shapeshiftoss/chain-adapters-v2.13.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.1...@shapeshiftoss/chain-adapters-v2.13.2) (2022-04-26)
+
+
+### Bug Fixes
+
+* cosmos-sdk/MsgWithdrawDelegationReward -> cosmos-sdk/MsgWithdrawDelegatorReward ([#558](https://github.com/shapeshift/lib/issues/558)) ([590c3dd](https://github.com/shapeshift/lib/commit/590c3dd1bcf2376601d4fe720d5c923950a09047))
+
+# [@shapeshiftoss/chain-adapters-v2.13.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.13.0...@shapeshiftoss/chain-adapters-v2.13.1) (2022-04-15)
+
+
+### Bug Fixes
+
+* add cosmos keepkey support ([#529](https://github.com/shapeshift/lib/issues/529)) ([74922b2](https://github.com/shapeshift/lib/commit/74922b282d493d31afada7929ab64f5d875ee032))
+
+# [@shapeshiftoss/chain-adapters-v2.13.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.12.0...@shapeshiftoss/chain-adapters-v2.13.0) (2022-04-10)
+
+
+### Features
+
+* add Cosmos delegated tokens to Validator ([#514](https://github.com/shapeshift/lib/issues/514)) ([113ad35](https://github.com/shapeshift/lib/commit/113ad356f0a2fdf49bbe7638f5b08531baed8cd3))
+
+# [@shapeshiftoss/chain-adapters-v2.12.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.11.0...@shapeshiftoss/chain-adapters-v2.12.0) (2022-04-04)
+
+
+### Features
+
+* support eip-1159 in buildSendTransaction ([#440](https://github.com/shapeshift/lib/issues/440)) ([c50e503](https://github.com/shapeshift/lib/commit/c50e503f5dc4ef7074ef0a431f5451d78ecb0fd9))
+
+# [@shapeshiftoss/chain-adapters-v2.11.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.10.0...@shapeshiftoss/chain-adapters-v2.11.0) (2022-03-28)
+
+
+### Features
+
+* don't log cosmos validation error ([#504](https://github.com/shapeshift/lib/issues/504)) ([6a309d0](https://github.com/shapeshift/lib/commit/6a309d0191ccec1b2441312f043b55dda978ecb7))
+
+# [@shapeshiftoss/chain-adapters-v2.10.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.9.0...@shapeshiftoss/chain-adapters-v2.10.0) (2022-03-28)
+
+
+### Features
+
+* delegate, undelegate and withdraw transactions ([#499](https://github.com/shapeshift/lib/issues/499)) ([239c216](https://github.com/shapeshift/lib/commit/239c2169f1d09e155abc941dd03bc76f6ce26861))
+
+# [@shapeshiftoss/chain-adapters-v2.9.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.8.1...@shapeshiftoss/chain-adapters-v2.9.0) (2022-03-28)
+
+
+### Features
+
+* add validator info ([#491](https://github.com/shapeshift/lib/issues/491)) ([92ef7de](https://github.com/shapeshift/lib/commit/92ef7de7fbae8ab77796932918f54c68aa01f3b8))
+
+# [@shapeshiftoss/chain-adapters-v2.8.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.8.0...@shapeshiftoss/chain-adapters-v2.8.1) (2022-03-24)
+
+# [@shapeshiftoss/chain-adapters-v2.8.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.7.2...@shapeshiftoss/chain-adapters-v2.8.0) (2022-03-24)
+
+
+### Features
+
+* return staking details for cosmos type accounts ([#479](https://github.com/shapeshift/lib/issues/479)) ([0d0712a](https://github.com/shapeshift/lib/commit/0d0712a13fa338b9fe700c2a496f34da29509328))
+
+# [@shapeshiftoss/chain-adapters-v2.7.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.7.1...@shapeshiftoss/chain-adapters-v2.7.2) (2022-03-24)
+
+# [@shapeshiftoss/chain-adapters-v2.7.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.7.0...@shapeshiftoss/chain-adapters-v2.7.1) (2022-03-24)
+
+# [@shapeshiftoss/chain-adapters-v2.7.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.6.2...@shapeshiftoss/chain-adapters-v2.7.0) (2022-03-22)
+
+
+### Features
+
+* accept memo in buildSendTransaction ([#467](https://github.com/shapeshift/lib/issues/467)) ([bbbaf46](https://github.com/shapeshift/lib/commit/bbbaf46ce2003cdab86fa60747d15b708037c616))
+
+# [@shapeshiftoss/chain-adapters-v2.6.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.6.1...@shapeshiftoss/chain-adapters-v2.6.2) (2022-03-21)
+
+
+### Bug Fixes
+
+* **cosmos:** actually validateAddress ([#456](https://github.com/shapeshift/lib/issues/456)) ([59bb636](https://github.com/shapeshift/lib/commit/59bb6360724ea328a23748eb0f2c57021d72b2cd))
+
+# [@shapeshiftoss/chain-adapters-v2.6.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.6.0...@shapeshiftoss/chain-adapters-v2.6.1) (2022-03-21)
+
+# [@shapeshiftoss/chain-adapters-v2.6.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.5.0...@shapeshiftoss/chain-adapters-v2.6.0) (2022-03-21)
+
+
+### Features
+
+* cosmos sign and broadcast tx ([#435](https://github.com/shapeshift/lib/issues/435)) ([1ba16a1](https://github.com/shapeshift/lib/commit/1ba16a1589113b3a1eb17415ec6f7e85c6d857a7))
+
+# [@shapeshiftoss/chain-adapters-v2.5.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.6...@shapeshiftoss/chain-adapters-v2.5.0) (2022-03-19)
+
+
+### Features
+
+* add remove function to chain adapters manager ([#457](https://github.com/shapeshift/lib/issues/457)) ([6e506ac](https://github.com/shapeshift/lib/commit/6e506ac9b104a6448e0ba13d81f50d3505b598e8))
+
+# [@shapeshiftoss/chain-adapters-v2.4.6](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.5...@shapeshiftoss/chain-adapters-v2.4.6) (2022-03-18)
+
+# [@shapeshiftoss/chain-adapters-v2.4.5](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.4...@shapeshiftoss/chain-adapters-v2.4.5) (2022-03-17)
+
+# [@shapeshiftoss/chain-adapters-v2.4.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.3...@shapeshiftoss/chain-adapters-v2.4.4) (2022-03-16)
+
+
+### Bug Fixes
+
+* update unchained client ([#451](https://github.com/shapeshift/lib/issues/451)) ([d23e179](https://github.com/shapeshift/lib/commit/d23e17995889343addf6bbcb79744ad11e3f8127))
+
+# [@shapeshiftoss/chain-adapters-v2.4.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.2...@shapeshiftoss/chain-adapters-v2.4.3) (2022-03-16)
+
+
+### Bug Fixes
+
+* btc getAddress uses the wrong accountType ([#447](https://github.com/shapeshift/lib/issues/447)) ([108851d](https://github.com/shapeshift/lib/commit/108851d015e17a351b6d04b6c42544f363f4f591))
+
+# [@shapeshiftoss/chain-adapters-v2.4.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.1...@shapeshiftoss/chain-adapters-v2.4.2) (2022-03-16)
+
+
+### Bug Fixes
+
+* update json rpc ([#442](https://github.com/shapeshift/lib/issues/442)) ([abfb16c](https://github.com/shapeshift/lib/commit/abfb16c3d28fa40bbb20e9834d95dca9d13e008a))
+
+# [@shapeshiftoss/chain-adapters-v2.4.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.4.0...@shapeshiftoss/chain-adapters-v2.4.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* removed error from required chainId and set on class ([#426](https://github.com/shapeshift/lib/issues/426)) ([8693d21](https://github.com/shapeshift/lib/commit/8693d217ed75f3f99882e8174653d5b95c9cfe97))
+
+# [@shapeshiftoss/chain-adapters-v2.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.3.0...@shapeshiftoss/chain-adapters-v2.4.0) (2022-03-14)
+
+
+### Features
+
+* cosmos unsubscribeTxs and closeTxs ([#434](https://github.com/shapeshift/lib/issues/434)) ([95e4ee1](https://github.com/shapeshift/lib/commit/95e4ee1ffc92a1d66348435937cef0401796d2d9))
+
+# [@shapeshiftoss/chain-adapters-v2.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.2.0...@shapeshiftoss/chain-adapters-v2.3.0) (2022-03-10)
+
+
+### Bug Fixes
+
+* update argument type ([#428](https://github.com/shapeshift/lib/issues/428)) ([08feb5e](https://github.com/shapeshift/lib/commit/08feb5e4e80c5329f4a34d84715086eea6beb722))
+
+
+### Features
+
+* cosmos tx history support ([#416](https://github.com/shapeshift/lib/issues/416)) ([94f24eb](https://github.com/shapeshift/lib/commit/94f24ebfe83f36bf0802d99bdcf7626905b82432))
+
+# [@shapeshiftoss/chain-adapters-v2.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.1.0...@shapeshiftoss/chain-adapters-v2.2.0) (2022-03-08)
+
+
+### Features
+
+* utxo chain adapter refactor ([#411](https://github.com/shapeshift/lib/issues/411)) ([c6d1b31](https://github.com/shapeshift/lib/commit/c6d1b311eefa3b7f48e24ef763b41eab27045191))
+
+# [@shapeshiftoss/chain-adapters-v2.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.0.2...@shapeshiftoss/chain-adapters-v2.1.0) (2022-03-08)
+
+
+### Features
+
+* cosmos `subscribeTxs` ([#415](https://github.com/shapeshift/lib/issues/415)) ([77fd091](https://github.com/shapeshift/lib/commit/77fd091a3f8a7927d90956c466c6dad002216db9))
+
+# [@shapeshiftoss/chain-adapters-v2.0.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.0.1...@shapeshiftoss/chain-adapters-v2.0.2) (2022-03-04)
+
+# [@shapeshiftoss/chain-adapters-v2.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v2.0.0...@shapeshiftoss/chain-adapters-v2.0.1) (2022-03-03)
+
+# [@shapeshiftoss/chain-adapters-v2.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v1.36.0...@shapeshiftoss/chain-adapters-v2.0.0) (2022-03-03)
+
+
+### Code Refactoring
+
+* remove contract types and  make assetnamespace and assetreference required fields ([#410](https://github.com/shapeshift/lib/issues/410)) ([b12bbf3](https://github.com/shapeshift/lib/commit/b12bbf39f55e5d87775def96c2ca7ce05abff2ee))
+
+
+### BREAKING CHANGES
+
+* remove ContractTypes
+
+For CAIP19 we will use AssetNamespace instead
+
+* refactor(swapper): use AssetNamespace instead of ContractTypes
+
+* feat(caip): caip19 requires assetNamespace and assetReference
+* removed contractType and tokenId
+
+assetNamespace and assetReference are used instead and are required
+
+* refactor(asset-service): use AssetNamespace instead of ContractTypes
+
+* refactor(chain-adapters): use assetNamespace and assetReference
+
+For CAIP19, stop relying on default assets
+
+* refactor(swapper): use assetReference instead of tokenId
+
+* refactor(market-data): use assetReference instead of tokenId
+
+* Update packages/caip/README.md
+
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
+* refactor(asset-service): updated ERC20 strings to lowercase
+
+Co-authored-by: Chris Thompson <chris@thompson-web.org>
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
 # [@shapeshiftoss/chain-adapters-v1.36.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/chain-adapters-v1.35.1...@shapeshiftoss/chain-adapters-v1.36.0) (2022-02-28)
 
 

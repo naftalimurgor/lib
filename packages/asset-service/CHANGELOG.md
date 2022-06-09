@@ -1,3 +1,268 @@
+# [@shapeshiftoss/asset-service-v4.6.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.6.0...@shapeshiftoss/asset-service-v4.6.1) (2022-06-08)
+
+# [@shapeshiftoss/asset-service-v4.6.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.5.0...@shapeshiftoss/asset-service-v4.6.0) (2022-06-03)
+
+
+### Features
+
+* **assetService:** consume normalization of Asset properties & use static data ([#746](https://github.com/shapeshift/lib/issues/746)) ([ca87bee](https://github.com/shapeshift/lib/commit/ca87bee46419a03d490a826b2b42c90b49cc3079))
+
+# [@shapeshiftoss/asset-service-v4.5.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.4.0...@shapeshiftoss/asset-service-v4.5.0) (2022-06-01)
+
+
+### Features
+
+* thorchain memo support ([#716](https://github.com/shapeshift/lib/issues/716)) ([fe9762f](https://github.com/shapeshift/lib/commit/fe9762fd7656ef17d93885ff154a991978c3e93b))
+
+# [@shapeshiftoss/asset-service-v4.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.3.0...@shapeshiftoss/asset-service-v4.4.0) (2022-05-31)
+
+
+### Features
+
+* add FOXy description ([#710](https://github.com/shapeshift/lib/issues/710)) ([dfccd73](https://github.com/shapeshift/lib/commit/dfccd73775e98a59603419373f78bb75f6b1e9b1))
+
+# [@shapeshiftoss/asset-service-v4.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.2.4...@shapeshiftoss/asset-service-v4.3.0) (2022-05-26)
+
+
+### Features
+
+* thorswapper initialize ([#703](https://github.com/shapeshift/lib/issues/703)) ([73cc081](https://github.com/shapeshift/lib/commit/73cc081b66cc58177415bf425f7899b289cc33af))
+
+# [@shapeshiftoss/asset-service-v4.2.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.2.3...@shapeshiftoss/asset-service-v4.2.4) (2022-05-25)
+
+# [@shapeshiftoss/asset-service-v4.2.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.2.2...@shapeshiftoss/asset-service-v4.2.3) (2022-05-24)
+
+
+### Bug Fixes
+
+* fix osmosis assets & parsing ([#689](https://github.com/shapeshift/lib/issues/689)) ([5360fba](https://github.com/shapeshift/lib/commit/5360fba40c050ef9e793b4b44ab5527cbf73d455))
+
+# [@shapeshiftoss/asset-service-v4.2.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.2.1...@shapeshiftoss/asset-service-v4.2.2) (2022-05-24)
+
+# [@shapeshiftoss/asset-service-v4.2.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.2.0...@shapeshiftoss/asset-service-v4.2.1) (2022-05-21)
+
+
+### Bug Fixes
+
+* mintscan url osmosis ([#675](https://github.com/shapeshift/lib/issues/675)) ([5f3fc07](https://github.com/shapeshift/lib/commit/5f3fc0708672d348471383f83d2a16d8f3ae1496))
+
+# [@shapeshiftoss/asset-service-v4.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.1.0...@shapeshiftoss/asset-service-v4.2.0) (2022-05-20)
+
+
+### Features
+
+* chain and asset utility functions ([#654](https://github.com/shapeshift/lib/issues/654)) ([4e12ce6](https://github.com/shapeshift/lib/commit/4e12ce6fd10cd8bf34e059e63c2a162fb6576932))
+
+# [@shapeshiftoss/asset-service-v4.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.0.1...@shapeshiftoss/asset-service-v4.1.0) (2022-05-18)
+
+
+### Features
+
+* add uni-v2 staking parser ([#648](https://github.com/shapeshift/lib/issues/648)) ([4e09ab7](https://github.com/shapeshift/lib/commit/4e09ab73c5768df4368e59aad7eb4107ef4dede7))
+
+# [@shapeshiftoss/asset-service-v4.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v4.0.0...@shapeshiftoss/asset-service-v4.0.1) (2022-05-18)
+
+# [@shapeshiftoss/asset-service-v4.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v3.0.1...@shapeshiftoss/asset-service-v4.0.0) (2022-05-18)
+
+
+### Performance Improvements
+
+* replace enums with dynamically derived object literals ([#656](https://github.com/shapeshift/lib/issues/656)) ([6d2d821](https://github.com/shapeshift/lib/commit/6d2d821318da9db4afec97b1247cf006a5fc42d2))
+
+
+### BREAKING CHANGES
+
+* the enum removal will need to be handled by consumers to use the new constants.
+
+* chore: remove toString() and associated comment
+
+* chore: remove string litirals
+
+* chore: optimise imports
+
+* chore: use string union for AssetNamespace
+
+* chore: update README
+
+# [@shapeshiftoss/asset-service-v3.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v3.0.0...@shapeshiftoss/asset-service-v3.0.1) (2022-05-17)
+
+# [@shapeshiftoss/asset-service-v3.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.6.0...@shapeshiftoss/asset-service-v3.0.0) (2022-05-10)
+
+
+### Performance Improvements
+
+* **assetService:** replace caip properties with their high-level counterparts ([#605](https://github.com/shapeshift/lib/issues/605)) ([f714931](https://github.com/shapeshift/lib/commit/f714931c51c975946ac07efdeda9c27bd770b271))
+
+
+### BREAKING CHANGES
+
+* **assetService:** updates the asset service with caip-free types and vernacular.
+
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+Co-authored-by: kaladinlight <35275952+kaladinlight@users.noreply.github.com>
+
+# [@shapeshiftoss/asset-service-v2.6.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.5.0...@shapeshiftoss/asset-service-v2.6.0) (2022-05-06)
+
+
+### Features
+
+* **caip:** flatten exports ([#560](https://github.com/shapeshift/lib/issues/560)) ([e326522](https://github.com/shapeshift/lib/commit/e3265223dca3c2126b2822395353f6650c4b0342))
+
+# [@shapeshiftoss/asset-service-v2.5.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.6...@shapeshiftoss/asset-service-v2.5.0) (2022-05-06)
+
+
+### Features
+
+* regenerate asset data with assetId as sorting criteria ([#620](https://github.com/shapeshift/lib/issues/620)) ([716e2e1](https://github.com/shapeshift/lib/commit/716e2e13847f58eadd5ec90dbd0d2c52db6d62cf))
+
+# [@shapeshiftoss/asset-service-v2.4.6](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.5...@shapeshiftoss/asset-service-v2.4.6) (2022-05-05)
+
+# [@shapeshiftoss/asset-service-v2.4.5](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.4...@shapeshiftoss/asset-service-v2.4.5) (2022-05-03)
+
+
+### Bug Fixes
+
+* blacklist 0xeee burn address ([#584](https://github.com/shapeshift/lib/issues/584)) ([86e2bad](https://github.com/shapeshift/lib/commit/86e2bad3e09a21918fa3b75bb8ead77b3432a5ba))
+
+# [@shapeshiftoss/asset-service-v2.4.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.3...@shapeshiftoss/asset-service-v2.4.4) (2022-05-02)
+
+
+### Bug Fixes
+
+* update descriptions ([#592](https://github.com/shapeshift/lib/issues/592)) ([b3cf4e8](https://github.com/shapeshift/lib/commit/b3cf4e8673be639704e595f701d18f0a6334371a))
+
+# [@shapeshiftoss/asset-service-v2.4.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.2...@shapeshiftoss/asset-service-v2.4.3) (2022-05-02)
+
+
+### Bug Fixes
+
+* removes 3 unnecessary api calls from zrxswapper.  ([#586](https://github.com/shapeshift/lib/issues/586)) ([57d59c8](https://github.com/shapeshift/lib/commit/57d59c8488cceb05cd5e0778b49690d0d2c97b68))
+
+# [@shapeshiftoss/asset-service-v2.4.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.1...@shapeshiftoss/asset-service-v2.4.2) (2022-05-02)
+
+
+### Bug Fixes
+
+* unbreak lib build ([#588](https://github.com/shapeshift/lib/issues/588)) ([bff0f3d](https://github.com/shapeshift/lib/commit/bff0f3d351f09ae9693b6b173782e8d8671ca3e4))
+* vscode tsconfig errors ([#577](https://github.com/shapeshift/lib/issues/577)) ([50138d0](https://github.com/shapeshift/lib/commit/50138d07b55b730f3bee68fae80414dc6578ee2a))
+
+# [@shapeshiftoss/asset-service-v2.4.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.4.0...@shapeshiftoss/asset-service-v2.4.1) (2022-04-29)
+
+
+### Bug Fixes
+
+* update assets file ([#583](https://github.com/shapeshift/lib/issues/583)) ([64a9572](https://github.com/shapeshift/lib/commit/64a957283a65635d9f3fae16bb8a12a95002dc7f))
+
+# [@shapeshiftoss/asset-service-v2.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.3.1...@shapeshiftoss/asset-service-v2.4.0) (2022-04-28)
+
+
+### Features
+
+* add assetid, chainid fields to asset type ([#570](https://github.com/shapeshift/lib/issues/570)) ([1c3c24c](https://github.com/shapeshift/lib/commit/1c3c24c2df6e71f3a4ad4b7f1863168aafdc8aa5))
+
+# [@shapeshiftoss/asset-service-v2.3.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.3.0...@shapeshiftoss/asset-service-v2.3.1) (2022-04-16)
+
+
+### Bug Fixes
+
+* add KICK to the blacklist ([#524](https://github.com/shapeshift/lib/issues/524)) ([68f81db](https://github.com/shapeshift/lib/commit/68f81db13222005c410c54f0186f739084a66595))
+
+# [@shapeshiftoss/asset-service-v2.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.2.3...@shapeshiftoss/asset-service-v2.3.0) (2022-04-05)
+
+
+### Features
+
+* cosmos asset description ([#510](https://github.com/shapeshift/lib/issues/510)) ([f206f8f](https://github.com/shapeshift/lib/commit/f206f8fe40460f3da2472df8baa0c6a2212a138d))
+
+# [@shapeshiftoss/asset-service-v2.2.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.2.2...@shapeshiftoss/asset-service-v2.2.3) (2022-03-29)
+
+# [@shapeshiftoss/asset-service-v2.2.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.2.1...@shapeshiftoss/asset-service-v2.2.2) (2022-03-24)
+
+# [@shapeshiftoss/asset-service-v2.2.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.2.0...@shapeshiftoss/asset-service-v2.2.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* fix yearn sdk instantiation ([#481](https://github.com/shapeshift/lib/issues/481)) ([fac8a33](https://github.com/shapeshift/lib/commit/fac8a339f193813e9074953f38d27fbf6b3ea6df))
+
+# [@shapeshiftoss/asset-service-v2.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.1.3...@shapeshiftoss/asset-service-v2.2.0) (2022-03-23)
+
+
+### Features
+
+* label ibc voucher assets as Asset on Osmosis ([#477](https://github.com/shapeshift/lib/issues/477)) ([947e654](https://github.com/shapeshift/lib/commit/947e654fb7cbce1f1c2635295737571042357509))
+
+# [@shapeshiftoss/asset-service-v2.1.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.1.2...@shapeshiftoss/asset-service-v2.1.3) (2022-03-23)
+
+# [@shapeshiftoss/asset-service-v2.1.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.1.1...@shapeshiftoss/asset-service-v2.1.2) (2022-03-22)
+
+# [@shapeshiftoss/asset-service-v2.1.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.1.0...@shapeshiftoss/asset-service-v2.1.1) (2022-03-22)
+
+
+### Bug Fixes
+
+* icon url ([#470](https://github.com/shapeshift/lib/issues/470)) ([4de6c6b](https://github.com/shapeshift/lib/commit/4de6c6b3155660c732f1705fb4c4aa3a57a5726f))
+
+# [@shapeshiftoss/asset-service-v2.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.0.4...@shapeshiftoss/asset-service-v2.1.0) (2022-03-21)
+
+
+### Features
+
+* implement Foxy asset & market data ([#455](https://github.com/shapeshift/lib/issues/455)) ([0d44ab9](https://github.com/shapeshift/lib/commit/0d44ab931153cffab81a923f24814e41a2f898ba)), closes [#453](https://github.com/shapeshift/lib/issues/453)
+
+# [@shapeshiftoss/asset-service-v2.0.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.0.3...@shapeshiftoss/asset-service-v2.0.4) (2022-03-18)
+
+# [@shapeshiftoss/asset-service-v2.0.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.0.2...@shapeshiftoss/asset-service-v2.0.3) (2022-03-16)
+
+
+### Bug Fixes
+
+* update json rpc ([#442](https://github.com/shapeshift/lib/issues/442)) ([abfb16c](https://github.com/shapeshift/lib/commit/abfb16c3d28fa40bbb20e9834d95dca9d13e008a))
+
+# [@shapeshiftoss/asset-service-v2.0.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.0.1...@shapeshiftoss/asset-service-v2.0.2) (2022-03-04)
+
+# [@shapeshiftoss/asset-service-v2.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v2.0.0...@shapeshiftoss/asset-service-v2.0.1) (2022-03-03)
+
+# [@shapeshiftoss/asset-service-v2.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v1.21.1...@shapeshiftoss/asset-service-v2.0.0) (2022-03-03)
+
+
+### Code Refactoring
+
+* remove contract types and  make assetnamespace and assetreference required fields ([#410](https://github.com/shapeshift/lib/issues/410)) ([b12bbf3](https://github.com/shapeshift/lib/commit/b12bbf39f55e5d87775def96c2ca7ce05abff2ee))
+
+
+### BREAKING CHANGES
+
+* remove ContractTypes
+
+For CAIP19 we will use AssetNamespace instead
+
+* refactor(swapper): use AssetNamespace instead of ContractTypes
+
+* feat(caip): caip19 requires assetNamespace and assetReference
+* removed contractType and tokenId
+
+assetNamespace and assetReference are used instead and are required
+
+* refactor(asset-service): use AssetNamespace instead of ContractTypes
+
+* refactor(chain-adapters): use assetNamespace and assetReference
+
+For CAIP19, stop relying on default assets
+
+* refactor(swapper): use assetReference instead of tokenId
+
+* refactor(market-data): use assetReference instead of tokenId
+
+* Update packages/caip/README.md
+
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
+* refactor(asset-service): updated ERC20 strings to lowercase
+
+Co-authored-by: Chris Thompson <chris@thompson-web.org>
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
 # [@shapeshiftoss/asset-service-v1.21.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/asset-service-v1.21.0...@shapeshiftoss/asset-service-v1.21.1) (2022-02-28)
 
 

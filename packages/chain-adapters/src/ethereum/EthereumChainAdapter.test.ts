@@ -7,7 +7,7 @@
 import { ETHSignTx, ETHWallet } from '@shapeshiftoss/hdwallet-core'
 import { NativeAdapterArgs, NativeHDWallet } from '@shapeshiftoss/hdwallet-native'
 import { chainAdapters, ChainTypes } from '@shapeshiftoss/types'
-import { ethereum as unchainedEthereum } from '@shapeshiftoss/unchained-client'
+import unchained from '@shapeshiftoss/unchained-client'
 import { merge } from 'lodash'
 import { numberToHex } from 'web3-utils'
 
@@ -83,13 +83,6 @@ describe('EthereumChainAdapter', () => {
   const makeEstimateGasMockedResponse = (overrideArgs?: { data: string }) =>
     merge({ data: '21000' }, overrideArgs)
 
-  const makeGetInfoMockResponse = (overrideArgs?: { data: { network: string } }) =>
-    merge(
-      {
-        data: { network: 'mainnet' }
-      },
-      overrideArgs
-    )
   const makeGetAccountMockResponse = (balance: {
     balance: string
     erc20Balance: string | undefined
@@ -100,7 +93,7 @@ describe('EthereumChainAdapter', () => {
       nonce: 2,
       tokens: [
         {
-          caip19: 'eip155:1/erc20:0xc770eefad204b5180df6a14ee197d99d808ee52d',
+          assetId: 'eip155:1/erc20:0xc770eefad204b5180df6a14ee197d99d808ee52d',
           balance: balance.erc20Balance,
           type: 'ERC20',
           contract: '0xc770eefad204b5180df6a14ee197d99d808ee52d'
@@ -110,15 +103,16 @@ describe('EthereumChainAdapter', () => {
   })
 
   const makeChainAdapterArgs = (overrideArgs?: {
-    providers?: { http: unchainedEthereum.api.V1Api }
+    providers?: { http: unchained.ethereum.V1Api }
     chainId?: string
   }): ethereum.ChainAdapterArgs =>
     merge(
       {
         providers: {
-          http: {} as unknown as unchainedEthereum.api.V1Api,
-          ws: {} as unchainedEthereum.ws.Client
-        }
+          http: {} as unknown as unchained.ethereum.V1Api,
+          ws: {} as unchained.ws.Client<unchained.ethereum.EthereumTx>
+        },
+        rpcUrl: ''
       },
       overrideArgs
     )
@@ -153,7 +147,7 @@ describe('EthereumChainAdapter', () => {
       const httpProvider = {
         estimateGas: jest.fn().mockResolvedValue(makeEstimateGasMockedResponse()),
         getGasFees: jest.fn().mockResolvedValue(makeGetGasFeesMockedResponse())
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
 
       const adapter = new ethereum.ChainAdapter(args)
@@ -172,27 +166,27 @@ describe('EthereumChainAdapter', () => {
           average: {
             chainSpecific: {
               gasLimit: '21000',
-              gasPrice: '50180000000',
+              gasPrice: '45000000000',
               maxFeePerGas: '300',
               maxPriorityFeePerGas: '10'
             },
-            txFee: '1053780000000000'
+            txFee: '945000000000000'
           },
           fast: {
             chainSpecific: {
               gasLimit: '21000',
-              gasPrice: '55477500000',
-              maxFeePerGas: '332',
+              gasPrice: '50180000000',
+              maxFeePerGas: '335',
               maxPriorityFeePerGas: '12'
             },
-            txFee: '1165027500000000'
+            txFee: '1053780000000000'
           },
           slow: {
             chainSpecific: {
               gasLimit: '21000',
               gasPrice: '41000000000',
-              maxFeePerGas: '246',
-              maxPriorityFeePerGas: '9'
+              maxFeePerGas: '274',
+              maxPriorityFeePerGas: '10'
             },
             txFee: '861000000000000'
           }
@@ -303,11 +297,10 @@ describe('EthereumChainAdapter', () => {
     it('should sign a properly formatted txToSign object', async () => {
       const balance = '2500000'
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(makeGetAccountMockResponse({ balance, erc20Balance: '424242' }))
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
 
@@ -332,11 +325,10 @@ describe('EthereumChainAdapter', () => {
     it('should throw on txToSign with invalid data', async () => {
       const balance = '2500000'
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(makeGetAccountMockResponse({ balance, erc20Balance: '424242' }))
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
 
@@ -400,7 +392,7 @@ describe('EthereumChainAdapter', () => {
 
       const httpProvider = {
         sendTx: jest.fn().mockResolvedValue({ data: expectedResult })
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -430,13 +422,12 @@ describe('EthereumChainAdapter', () => {
 
     it('should throw if passed tx has ENS as "to" property', async () => {
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(
             makeGetAccountMockResponse({ balance: '2500000', erc20Balance: '424242' })
           )
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -469,11 +460,10 @@ describe('EthereumChainAdapter', () => {
 
     it('should return a validly formatted ETHSignTx object for a valid BuildSendTxInput parameter', async () => {
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(makeGetAccountMockResponse({ balance: '0', erc20Balance: '424242' }))
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -500,11 +490,10 @@ describe('EthereumChainAdapter', () => {
     })
     it('sendmax: true without chainSpecific.erc20ContractAddress should throw if ETH balance is 0', async () => {
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(makeGetAccountMockResponse({ balance: '0', erc20Balance: '424242' }))
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -526,11 +515,10 @@ describe('EthereumChainAdapter', () => {
         bn(balance).minus(bn(gasLimit).multipliedBy(gasPrice)) as any
       )
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(makeGetAccountMockResponse({ balance, erc20Balance: '424242' }))
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -558,13 +546,12 @@ describe('EthereumChainAdapter', () => {
     })
     it("should build a tx with value: '0' for ERC20 txs without sendMax", async () => {
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(
             makeGetAccountMockResponse({ balance: '2500000', erc20Balance: '424242' })
           )
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -591,13 +578,12 @@ describe('EthereumChainAdapter', () => {
     })
     it('sendmax: true with chainSpecific.erc20ContractAddress should build a tx with full account balance - gas fee', async () => {
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(
             makeGetAccountMockResponse({ balance: '2500000', erc20Balance: '424242' })
           )
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -627,13 +613,12 @@ describe('EthereumChainAdapter', () => {
 
     it('sendmax: true with chainSpecific.erc20ContractAddress should throw if token balance is 0', async () => {
       const httpProvider = {
-        getInfo: jest.fn().mockResolvedValue(makeGetInfoMockResponse()),
         getAccount: jest
           .fn<any, any>()
           .mockResolvedValue(
             makeGetAccountMockResponse({ balance: '2500000', erc20Balance: undefined })
           )
-      } as unknown as unchainedEthereum.api.V1Api
+      } as unknown as unchained.ethereum.V1Api
 
       const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
       const adapter = new ethereum.ChainAdapter(args)
@@ -649,6 +634,90 @@ describe('EthereumChainAdapter', () => {
       await expect(adapter.buildSendTransaction(tx)).rejects.toThrow('no balance')
 
       expect(args.providers.http.getAccount).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('buildCustomTx', () => {
+    it('should build an unsigned custom tx using gasPrice', async () => {
+      const httpProvider = {
+        getAccount: jest
+          .fn<any, any>()
+          .mockResolvedValue(
+            makeGetAccountMockResponse({ balance: '2500000', erc20Balance: undefined })
+          )
+      } as unknown as unchained.ethereum.V1Api
+
+      const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
+      const adapter = new ethereum.ChainAdapter(args)
+
+      const txArgs = {
+        wallet: await getWallet(),
+        bip44Params: { purpose: 44, coinType: 60, accountNumber: 0 },
+        to: `0x47CB53752e5dc0A972440dA127DCA9FBA6C2Ab6F`,
+        data: '0x420',
+        value: '123',
+        gasPrice: '123',
+        gasLimit: '456'
+      }
+
+      const output = await adapter.buildCustomTx(txArgs)
+
+      const expectedOutput = {
+        txToSign: {
+          addressNList: [2147483692, 2147483708, 2147483648, 0, 0],
+          value: '123',
+          to: '0x47CB53752e5dc0A972440dA127DCA9FBA6C2Ab6F',
+          chainId: 1,
+          data: '0x420',
+          nonce: '0x2',
+          gasLimit: '0x1c8',
+          gasPrice: '0x7b'
+        }
+      }
+
+      await expect(expectedOutput).toEqual(output)
+    })
+
+    it('should build an unsigned custom tx using maxFeePerGas & maxPriorityFeePerGas (eip1559)', async () => {
+      const httpProvider = {
+        getAccount: jest
+          .fn<any, any>()
+          .mockResolvedValue(
+            makeGetAccountMockResponse({ balance: '2500000', erc20Balance: undefined })
+          )
+      } as unknown as unchained.ethereum.V1Api
+
+      const args = makeChainAdapterArgs({ providers: { http: httpProvider } })
+      const adapter = new ethereum.ChainAdapter(args)
+
+      const txArgs = {
+        wallet: await getWallet(),
+        bip44Params: { purpose: 44, coinType: 60, accountNumber: 0 },
+        to: `0x47CB53752e5dc0A972440dA127DCA9FBA6C2Ab6F`,
+        data: '0x420',
+        value: '123',
+        gasLimit: '456',
+        maxFeePerGas: '421',
+        maxPriorityFeePerGas: '422'
+      }
+
+      const output = await adapter.buildCustomTx(txArgs)
+
+      const expectedOutput = {
+        txToSign: {
+          addressNList: [2147483692, 2147483708, 2147483648, 0, 0],
+          value: '123',
+          to: '0x47CB53752e5dc0A972440dA127DCA9FBA6C2Ab6F',
+          chainId: 1,
+          data: '0x420',
+          nonce: '0x2',
+          gasLimit: '0x1c8',
+          maxFeePerGas: '0x1a5',
+          maxPriorityFeePerGas: '0x1a6'
+        }
+      }
+
+      await expect(expectedOutput).toEqual(output)
     })
   })
 })

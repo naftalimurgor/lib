@@ -1,3 +1,249 @@
+# [@shapeshiftoss/types-v5.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.4.1...@shapeshiftoss/types-v5.0.0) (2022-06-09)
+
+
+### Features
+
+* **types:** remove chainAdapters types ([#773](https://github.com/shapeshift/lib/issues/773)) ([40a32cb](https://github.com/shapeshift/lib/commit/40a32cb8077e1b6336f0f8fec00e871b989146c8))
+
+
+### BREAKING CHANGES
+
+* **types:** Removed `chainAdapters` types. Those will now be in the `chain-adapters` package.
+
+# [@shapeshiftoss/types-v4.4.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.4.0...@shapeshiftoss/types-v4.4.1) (2022-06-08)
+
+# [@shapeshiftoss/types-v4.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.3.2...@shapeshiftoss/types-v4.4.0) (2022-06-03)
+
+
+### Features
+
+* **types:** remove Asset properties for normalization ([#743](https://github.com/shapeshift/lib/issues/743)) ([76088d5](https://github.com/shapeshift/lib/commit/76088d5f2cdce1fb7eb1b454be181648cc208351))
+
+# [@shapeshiftoss/types-v4.3.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.3.1...@shapeshiftoss/types-v4.3.2) (2022-05-26)
+
+# [@shapeshiftoss/types-v4.3.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.3.0...@shapeshiftoss/types-v4.3.1) (2022-05-24)
+
+# [@shapeshiftoss/types-v4.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.2.0...@shapeshiftoss/types-v4.3.0) (2022-05-20)
+
+
+### Features
+
+* add supply and maxSupply to marketData ([#673](https://github.com/shapeshift/lib/issues/673)) ([773b632](https://github.com/shapeshift/lib/commit/773b6325acf5ff1122aa2dde9f2dc34f41eab4ad))
+
+# [@shapeshiftoss/types-v4.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.1.0...@shapeshiftoss/types-v4.2.0) (2022-05-18)
+
+
+### Features
+
+* osmosis adapter ([#664](https://github.com/shapeshift/lib/issues/664)) ([8bcdfd1](https://github.com/shapeshift/lib/commit/8bcdfd17a9902fb08239c4b4a2db3ae6b6e15183))
+
+# [@shapeshiftoss/types-v4.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.0.1...@shapeshiftoss/types-v4.1.0) (2022-05-12)
+
+
+### Features
+
+* replace ChainTypes to SupportedChainIds in Swapper ([#630](https://github.com/shapeshift/lib/issues/630)) ([9c86118](https://github.com/shapeshift/lib/commit/9c86118b4766b11467c08fad0bed7017ecba40ac))
+
+# [@shapeshiftoss/types-v4.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v4.0.0...@shapeshiftoss/types-v4.0.1) (2022-05-12)
+
+# [@shapeshiftoss/types-v4.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.1.5...@shapeshiftoss/types-v4.0.0) (2022-05-05)
+
+
+### Performance Improvements
+
+* **types:** trigger major version bump ([#617](https://github.com/shapeshift/lib/issues/617)) ([212b1e7](https://github.com/shapeshift/lib/commit/212b1e75442e34ccba24ac1fca969d12ba87f990))
+
+
+### BREAKING CHANGES
+
+* **types:** trigger the major version bump that should have occurred with the changes in 3.1.4
+
+# [@shapeshiftoss/types-v3.1.5](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.1.4...@shapeshiftoss/types-v3.1.5) (2022-05-05)
+
+
+### chore
+
+* **types:** trigger major version bump ([#616](https://github.com/shapeshift/lib/issues/616)) ([18f21ce](https://github.com/shapeshift/lib/commit/18f21ce9aba34597c0e4af361cddf62411536555))
+
+
+### BREAKING CHANGES
+
+* **types:** trigger the major version bump that should have occurred with the changes in 3.1.4
+
+Also fix the README header...
+
+# [@shapeshiftoss/types-v3.1.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.1.3...@shapeshiftoss/types-v3.1.4) (2022-05-05)
+
+# [@shapeshiftoss/types-v3.1.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.1.2...@shapeshiftoss/types-v3.1.3) (2022-05-05)
+
+# [@shapeshiftoss/types-v3.1.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.1.1...@shapeshiftoss/types-v3.1.2) (2022-05-03)
+
+# [@shapeshiftoss/types-v3.1.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.1.0...@shapeshiftoss/types-v3.1.1) (2022-05-02)
+
+# [@shapeshiftoss/types-v3.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.0.1...@shapeshiftoss/types-v3.1.0) (2022-05-02)
+
+
+### Features
+
+* make caip2, caip19 fields optional ([#593](https://github.com/shapeshift/lib/issues/593)) ([0ac7a81](https://github.com/shapeshift/lib/commit/0ac7a815ed189ee5b842d7488752e14f8a84f8f4))
+
+# [@shapeshiftoss/types-v3.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v3.0.0...@shapeshiftoss/types-v3.0.1) (2022-05-02)
+
+
+### Bug Fixes
+
+* vscode tsconfig errors ([#577](https://github.com/shapeshift/lib/issues/577)) ([50138d0](https://github.com/shapeshift/lib/commit/50138d07b55b730f3bee68fae80414dc6578ee2a))
+
+# [@shapeshiftoss/types-v3.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.11.0...@shapeshiftoss/types-v3.0.0) (2022-04-29)
+
+
+### Features
+
+* remove swappertype from quote fee type ([#569](https://github.com/shapeshift/lib/issues/569)) ([303dfb1](https://github.com/shapeshift/lib/commit/303dfb1fd1b27c00075c0921d1478e93cb9feeff))
+
+
+### BREAKING CHANGES
+
+* removed SwapperType generic
+
+# [@shapeshiftoss/types-v2.11.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.10.1...@shapeshiftoss/types-v2.11.0) (2022-04-28)
+
+
+### Features
+
+* add assetid, chainid fields to asset type ([#570](https://github.com/shapeshift/lib/issues/570)) ([1c3c24c](https://github.com/shapeshift/lib/commit/1c3c24c2df6e71f3a4ad4b7f1863168aafdc8aa5))
+
+# [@shapeshiftoss/types-v2.10.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.10.0...@shapeshiftoss/types-v2.10.1) (2022-04-28)
+
+
+### Bug Fixes
+
+* remove getmaxamount unnecessary code ([#582](https://github.com/shapeshift/lib/issues/582)) ([026672b](https://github.com/shapeshift/lib/commit/026672b39498ea5abe056cc21518d69e611e6090))
+
+# [@shapeshiftoss/types-v2.10.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.9.1...@shapeshiftoss/types-v2.10.0) (2022-04-27)
+
+
+### Features
+
+* **swapper:** add getByPair ([#526](https://github.com/shapeshift/lib/issues/526)) ([ec6d40f](https://github.com/shapeshift/lib/commit/ec6d40f9b399ab6eabdac97125e04c93342b7ab7))
+
+# [@shapeshiftoss/types-v2.9.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.9.0...@shapeshiftoss/types-v2.9.1) (2022-04-15)
+
+
+### Bug Fixes
+
+* add cosmos keepkey support ([#529](https://github.com/shapeshift/lib/issues/529)) ([74922b2](https://github.com/shapeshift/lib/commit/74922b282d493d31afada7929ab64f5d875ee032))
+
+# [@shapeshiftoss/types-v2.9.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.8.0...@shapeshiftoss/types-v2.9.0) (2022-04-10)
+
+
+### Features
+
+* add Cosmos delegated tokens to Validator ([#514](https://github.com/shapeshift/lib/issues/514)) ([113ad35](https://github.com/shapeshift/lib/commit/113ad356f0a2fdf49bbe7638f5b08531baed8cd3))
+
+# [@shapeshiftoss/types-v2.8.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.7.0...@shapeshiftoss/types-v2.8.0) (2022-04-04)
+
+
+### Features
+
+* support eip-1159 in buildSendTransaction ([#440](https://github.com/shapeshift/lib/issues/440)) ([c50e503](https://github.com/shapeshift/lib/commit/c50e503f5dc4ef7074ef0a431f5451d78ecb0fd9))
+
+# [@shapeshiftoss/types-v2.7.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.6.0...@shapeshiftoss/types-v2.7.0) (2022-03-29)
+
+
+### Features
+
+* move withdraw type to types package ([#498](https://github.com/shapeshift/lib/issues/498)) ([6a7e7d1](https://github.com/shapeshift/lib/commit/6a7e7d17a025691e37769f5807fa144c8d872b1e))
+
+# [@shapeshiftoss/types-v2.6.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.5.0...@shapeshiftoss/types-v2.6.0) (2022-03-28)
+
+
+### Features
+
+* delegate, undelegate and withdraw transactions ([#499](https://github.com/shapeshift/lib/issues/499)) ([239c216](https://github.com/shapeshift/lib/commit/239c2169f1d09e155abc941dd03bc76f6ce26861))
+
+# [@shapeshiftoss/types-v2.5.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.4.0...@shapeshiftoss/types-v2.5.0) (2022-03-28)
+
+
+### Features
+
+* add validator info ([#491](https://github.com/shapeshift/lib/issues/491)) ([92ef7de](https://github.com/shapeshift/lib/commit/92ef7de7fbae8ab77796932918f54c68aa01f3b8))
+
+# [@shapeshiftoss/types-v2.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.3.0...@shapeshiftoss/types-v2.4.0) (2022-03-24)
+
+
+### Features
+
+* return staking details for cosmos type accounts ([#479](https://github.com/shapeshift/lib/issues/479)) ([0d0712a](https://github.com/shapeshift/lib/commit/0d0712a13fa338b9fe700c2a496f34da29509328))
+
+# [@shapeshiftoss/types-v2.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.2.1...@shapeshiftoss/types-v2.3.0) (2022-03-22)
+
+
+### Features
+
+* accept memo in buildSendTransaction ([#467](https://github.com/shapeshift/lib/issues/467)) ([bbbaf46](https://github.com/shapeshift/lib/commit/bbbaf46ce2003cdab86fa60747d15b708037c616))
+
+# [@shapeshiftoss/types-v2.2.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.2.0...@shapeshiftoss/types-v2.2.1) (2022-03-22)
+
+
+### Bug Fixes
+
+* make accountType optional in BitcoinChainAdapter getaddress ([#452](https://github.com/shapeshift/lib/issues/452)) ([42372a4](https://github.com/shapeshift/lib/commit/42372a49ca417f248fb415a5c0c07f2ea8db2c56))
+
+# [@shapeshiftoss/types-v2.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.1.0...@shapeshiftoss/types-v2.2.0) (2022-03-21)
+
+
+### Features
+
+* cosmos sign and broadcast tx ([#435](https://github.com/shapeshift/lib/issues/435)) ([1ba16a1](https://github.com/shapeshift/lib/commit/1ba16a1589113b3a1eb17415ec6f7e85c6d857a7))
+
+# [@shapeshiftoss/types-v2.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v2.0.0...@shapeshiftoss/types-v2.1.0) (2022-03-10)
+
+
+### Features
+
+* cosmos tx history support ([#416](https://github.com/shapeshift/lib/issues/416)) ([94f24eb](https://github.com/shapeshift/lib/commit/94f24ebfe83f36bf0802d99bdcf7626905b82432))
+
+# [@shapeshiftoss/types-v2.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v1.26.0...@shapeshiftoss/types-v2.0.0) (2022-03-03)
+
+
+### Code Refactoring
+
+* remove contract types and  make assetnamespace and assetreference required fields ([#410](https://github.com/shapeshift/lib/issues/410)) ([b12bbf3](https://github.com/shapeshift/lib/commit/b12bbf39f55e5d87775def96c2ca7ce05abff2ee))
+
+
+### BREAKING CHANGES
+
+* remove ContractTypes
+
+For CAIP19 we will use AssetNamespace instead
+
+* refactor(swapper): use AssetNamespace instead of ContractTypes
+
+* feat(caip): caip19 requires assetNamespace and assetReference
+* removed contractType and tokenId
+
+assetNamespace and assetReference are used instead and are required
+
+* refactor(asset-service): use AssetNamespace instead of ContractTypes
+
+* refactor(chain-adapters): use assetNamespace and assetReference
+
+For CAIP19, stop relying on default assets
+
+* refactor(swapper): use assetReference instead of tokenId
+
+* refactor(market-data): use assetReference instead of tokenId
+
+* Update packages/caip/README.md
+
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
+* refactor(asset-service): updated ERC20 strings to lowercase
+
+Co-authored-by: Chris Thompson <chris@thompson-web.org>
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
 # [@shapeshiftoss/types-v1.26.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/types-v1.25.0...@shapeshiftoss/types-v1.26.0) (2022-02-28)
 
 

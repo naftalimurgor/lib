@@ -1,5 +1,4 @@
-import { adapters } from '@shapeshiftoss/caip'
-import { fromCAIP19 } from '@shapeshiftoss/caip/dist/caip19/caip19'
+import { adapters, CHAIN_NAMESPACE, fromAssetId } from '@shapeshiftoss/caip'
 import {
   ChainTypes,
   FindAllMarketArgs,
@@ -31,6 +30,7 @@ type CoinGeckoAssetData = {
     total_volume: { [key: string]: string }
     high_24h: { [key: string]: string }
     low_24h: { [key: string]: string }
+    circulating_supply: string
     total_supply: string
     max_supply: string
     price_change_percentage_24h: number
@@ -38,20 +38,34 @@ type CoinGeckoAssetData = {
 }
 
 export class CoinGeckoMarketService implements MarketService {
-  baseUrl = 'https://api.coingecko.com/api/v3'
+  baseUrl: string
+  APIKey: string
+
+  constructor(args: { coinGeckoAPIKey: string }) {
+    const { coinGeckoAPIKey } = args
+    this.APIKey = coinGeckoAPIKey
+    // if we have a key - use the pro- api
+    this.baseUrl = `https://${this.APIKey ? 'pro-' : ''}api.coingecko.com/api/v3`
+  }
 
   private readonly defaultGetByMarketCapArgs: FindAllMarketArgs = {
     count: 2500
   }
 
-  findAll = async (args?: FindAllMarketArgs) => {
+  private maybeAddAPIKey = (): string => {
+    return this.APIKey ? `&x_cg_pro_api_key=${this.APIKey}` : ''
+  }
+
+  async findAll(args?: FindAllMarketArgs) {
     const argsToUse = { ...this.defaultGetByMarketCapArgs, ...args }
     const { count } = argsToUse
     const perPage = count > 250 ? 250 : count
     const pages = Math.ceil(bnOrZero(count).div(perPage).toNumber())
 
     const urlAtPage = (page: number) =>
-      `${this.baseUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=false`
+      `${
+        this.baseUrl
+      }/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=false${this.maybeAddAPIKey()}`
     const pageCount = Array(pages)
       .fill(0)
       .map((_v, i) => i + 1)
@@ -68,18 +82,22 @@ export class CoinGeckoMarketService implements MarketService {
         .reduce((acc, cur) => {
           const { id } = cur
           try {
-            const caip19 = adapters.coingeckoToCAIP19(id)
-            if (!caip19) return acc
+            const assetId = adapters.coingeckoToAssetId(id)
+            if (!assetId) return acc
             const curWithoutId = omit(cur, 'id') // don't leak this through to clients
-            acc[caip19] = {
+            acc[assetId] = {
               price: curWithoutId.current_price.toString(),
               marketCap: curWithoutId.market_cap.toString(),
               volume: curWithoutId.total_volume.toString(),
-              changePercent24Hr: curWithoutId.price_change_percentage_24h
+              changePercent24Hr: curWithoutId.price_change_percentage_24h,
+              supply: curWithoutId.circulating_supply.toString(),
+              maxSupply: curWithoutId.max_supply
+                ? curWithoutId.max_supply.toString()
+                : curWithoutId.total_supply?.toString()
             }
             return acc
           } catch {
-            return acc // no caip found, we don't support this asset
+            return acc // no AssetId found, we don't support this asset
           }
         }, {} as MarketCapResult)
     } catch (e) {
@@ -87,41 +105,50 @@ export class CoinGeckoMarketService implements MarketService {
     }
   }
 
-  findByCaip19 = async ({ caip19 }: MarketDataArgs): Promise<MarketData | null> => {
+  async findByAssetId({ assetId }: MarketDataArgs): Promise<MarketData | null> {
     try {
-      if (!adapters.CAIP19ToCoingecko(caip19)) return null
-      const { tokenId } = fromCAIP19(caip19)
-      const isToken = !!tokenId
-      const id = isToken ? 'ethereum' : adapters.CAIP19ToCoingecko(caip19)
-      const contractUrl = isToken ? `/contract/${tokenId}` : ''
+      if (!adapters.assetIdToCoingecko(assetId)) return null
+      const { chainNamespace, assetReference } = fromAssetId(assetId)
+      const isToken = chainNamespace === CHAIN_NAMESPACE.Ethereum && assetReference.startsWith('0x')
+      const id = isToken ? 'ethereum' : adapters.assetIdToCoingecko(assetId)
+      const contractUrl = isToken ? `/contract/${assetReference}` : ''
 
       const { data }: { data: CoinGeckoAssetData } = await axios.get(
-        `${this.baseUrl}/coins/${id}${contractUrl}`
+        `${this.baseUrl}/coins/${id}${contractUrl}?${this.maybeAddAPIKey()}`
       )
 
-      // TODO: get correct localizations
       const currency = 'usd'
       const marketData = data?.market_data
+      /* max_supply may be null on coingecko while available on other sources (coincap)
+      hence choosing to take value from total_supply if existing
+      Also a lot of time when max_supply is null, total_supply is the maximum supply on coingecko
+      We can reassess in the future the degree of precision we want on that field */
       return {
         price: marketData?.current_price?.[currency],
         marketCap: marketData?.market_cap?.[currency],
         changePercent24Hr: marketData?.price_change_percentage_24h,
-        volume: marketData?.total_volume?.[currency]
+        volume: marketData?.total_volume?.[currency],
+        supply: marketData?.circulating_supply,
+        maxSupply: marketData?.max_supply
+          ? marketData?.max_supply
+          : marketData?.total_supply?.toString()
       }
     } catch (e) {
       console.warn(e)
-      throw new Error('CoinGeckoMarketService(findByCaip19): error fetching market data')
+      throw new Error('CoinGeckoMarketService(findByAssetId): error fetching market data')
     }
   }
 
-  findPriceHistoryByCaip19 = async ({
-    caip19,
+  async findPriceHistoryByAssetId({
+    assetId,
     timeframe
-  }: PriceHistoryArgs): Promise<HistoryData[]> => {
-    if (!adapters.CAIP19ToCoingecko(caip19)) return []
+  }: PriceHistoryArgs): Promise<HistoryData[]> {
+    if (!adapters.assetIdToCoingecko(assetId)) return []
     try {
-      const { tokenId } = fromCAIP19(caip19)
-      const id = tokenId ? 'ethereum' : adapters.CAIP19ToCoingecko(caip19)
+      const { chainNamespace, assetReference } = fromAssetId(assetId)
+      const isToken = chainNamespace === CHAIN_NAMESPACE.Ethereum && assetReference.startsWith('0x')
+      const id = isToken ? 'ethereum' : adapters.assetIdToCoingecko(assetId)
+      const contract = isToken ? `/contract/${assetReference}` : ''
 
       const end = dayjs().startOf('minute')
       let start
@@ -150,16 +177,14 @@ export class CoinGeckoMarketService implements MarketService {
 
       const from = start.valueOf() / 1000
       const to = end.valueOf() / 1000
-      const contract = tokenId ? `/contract/${tokenId}` : ''
       const url = `${this.baseUrl}/coins/${id}${contract}`
       type CoinGeckoHistoryData = {
         prices: [number, number][]
       }
 
-      // TODO: change vs_currency to localized currency
       const currency = 'usd'
       const { data: historyData } = await axios.get<CoinGeckoHistoryData>(
-        `${url}/market_chart/range?id=${id}&vs_currency=${currency}&from=${from}&to=${to}`
+        `${url}/market_chart/range?id=${id}&vs_currency=${currency}&from=${from}&to=${to}${this.maybeAddAPIKey()}`
       )
       return historyData?.prices?.reduce<HistoryData[]>((acc, data) => {
         const date = data[0]
@@ -181,7 +206,7 @@ export class CoinGeckoMarketService implements MarketService {
     } catch (e) {
       console.warn(e)
       throw new Error(
-        'CoinGeckoMarketService(findPriceHistoryByCaip19): error fetching price history'
+        'CoinGeckoMarketService(findPriceHistoryByAssetId): error fetching price history'
       )
     }
   }

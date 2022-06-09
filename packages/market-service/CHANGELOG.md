@@ -1,3 +1,259 @@
+# [@shapeshiftoss/market-service-v5.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v5.0.0...@shapeshiftoss/market-service-v5.0.1) (2022-06-08)
+
+# [@shapeshiftoss/market-service-v5.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.6.1...@shapeshiftoss/market-service-v5.0.0) (2022-06-08)
+
+
+### Features
+
+* update btc/eth to use historical tx history and new ws payloads ([#674](https://github.com/shapeshift/lib/issues/674)) ([0189e3b](https://github.com/shapeshift/lib/commit/0189e3b4dd5a3b998ddf285e761ae11dea72f94b))
+
+
+### BREAKING CHANGES
+
+* unchained-client and chain-adapters
+
+* revert pre release package versions
+
+* revert changes to no breaking packages
+
+* dependencies
+
+* pin package versions
+
+# [@shapeshiftoss/market-service-v4.6.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.6.0...@shapeshiftoss/market-service-v4.6.1) (2022-06-08)
+
+# [@shapeshiftoss/market-service-v4.6.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.5.1...@shapeshiftoss/market-service-v4.6.0) (2022-06-03)
+
+
+### Features
+
+* **market-service:** foxy supply and maxSupply fields ([#729](https://github.com/shapeshift/lib/issues/729)) ([84b3872](https://github.com/shapeshift/lib/commit/84b387294636304a022e7a2e80b91aed9b68a931))
+
+# [@shapeshiftoss/market-service-v4.5.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.5.0...@shapeshiftoss/market-service-v4.5.1) (2022-06-03)
+
+
+### Bug Fixes
+
+* dependency inject market service manager ([#741](https://github.com/shapeshift/lib/issues/741)) ([a6ab9d4](https://github.com/shapeshift/lib/commit/a6ab9d477335504e50e8d6c309e6a9ffacf5a650))
+
+# [@shapeshiftoss/market-service-v4.5.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.4.0...@shapeshiftoss/market-service-v4.5.0) (2022-06-02)
+
+
+### Features
+
+* support coingecko pro with api key ([#738](https://github.com/shapeshift/lib/issues/738)) ([b411cab](https://github.com/shapeshift/lib/commit/b411cab0a8e51d3930a688315a514d83df7d51eb))
+
+# [@shapeshiftoss/market-service-v4.4.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.3.0...@shapeshiftoss/market-service-v4.4.0) (2022-06-01)
+
+
+### Features
+
+* thorchain memo support ([#716](https://github.com/shapeshift/lib/issues/716)) ([fe9762f](https://github.com/shapeshift/lib/commit/fe9762fd7656ef17d93885ff154a991978c3e93b))
+
+# [@shapeshiftoss/market-service-v4.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.2.2...@shapeshiftoss/market-service-v4.3.0) (2022-05-26)
+
+
+### Features
+
+* thorswapper initialize ([#703](https://github.com/shapeshift/lib/issues/703)) ([73cc081](https://github.com/shapeshift/lib/commit/73cc081b66cc58177415bf425f7899b289cc33af))
+
+# [@shapeshiftoss/market-service-v4.2.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.2.1...@shapeshiftoss/market-service-v4.2.2) (2022-05-25)
+
+# [@shapeshiftoss/market-service-v4.2.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.2.0...@shapeshiftoss/market-service-v4.2.1) (2022-05-24)
+
+# [@shapeshiftoss/market-service-v4.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.1.0...@shapeshiftoss/market-service-v4.2.0) (2022-05-20)
+
+
+### Features
+
+* add supply and maxSupply fields to market service response ([#670](https://github.com/shapeshift/lib/issues/670)) ([9ad837b](https://github.com/shapeshift/lib/commit/9ad837bc8b56d105dc4892c242bd25ed15cb0cf0))
+
+# [@shapeshiftoss/market-service-v4.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.0.3...@shapeshiftoss/market-service-v4.1.0) (2022-05-20)
+
+
+### Features
+
+* chain and asset utility functions ([#654](https://github.com/shapeshift/lib/issues/654)) ([4e12ce6](https://github.com/shapeshift/lib/commit/4e12ce6fd10cd8bf34e059e63c2a162fb6576932))
+
+# [@shapeshiftoss/market-service-v4.0.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.0.2...@shapeshiftoss/market-service-v4.0.3) (2022-05-19)
+
+
+### Bug Fixes
+
+* timeframes for fiat rates ([#667](https://github.com/shapeshift/lib/issues/667)) ([38f3d12](https://github.com/shapeshift/lib/commit/38f3d12f0a375a0723755a9402dfd9f3be51ebf8))
+
+# [@shapeshiftoss/market-service-v4.0.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.0.1...@shapeshiftoss/market-service-v4.0.2) (2022-05-18)
+
+
+### Bug Fixes
+
+* fetch multiple years for fiat price history ([#660](https://github.com/shapeshift/lib/issues/660)) ([810c899](https://github.com/shapeshift/lib/commit/810c89977614b6fa86a6d855376765f1f52724c3))
+
+# [@shapeshiftoss/market-service-v4.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v4.0.0...@shapeshiftoss/market-service-v4.0.1) (2022-05-18)
+
+# [@shapeshiftoss/market-service-v4.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v3.0.2...@shapeshiftoss/market-service-v4.0.0) (2022-05-18)
+
+
+### Performance Improvements
+
+* replace enums with dynamically derived object literals ([#656](https://github.com/shapeshift/lib/issues/656)) ([6d2d821](https://github.com/shapeshift/lib/commit/6d2d821318da9db4afec97b1247cf006a5fc42d2))
+
+
+### BREAKING CHANGES
+
+* the enum removal will need to be handled by consumers to use the new constants.
+
+* chore: remove toString() and associated comment
+
+* chore: remove string litirals
+
+* chore: optimise imports
+
+* chore: use string union for AssetNamespace
+
+* chore: update README
+
+# [@shapeshiftoss/market-service-v3.0.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v3.0.1...@shapeshiftoss/market-service-v3.0.2) (2022-05-16)
+
+
+### Bug Fixes
+
+* sort fiat price history by time correctly ([#647](https://github.com/shapeshift/lib/issues/647)) ([845d4dc](https://github.com/shapeshift/lib/commit/845d4dc8f464a25cf4c4cc7498bdac9a9ef22185))
+
+# [@shapeshiftoss/market-service-v3.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v3.0.0...@shapeshiftoss/market-service-v3.0.1) (2022-05-12)
+
+# [@shapeshiftoss/market-service-v3.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.3.0...@shapeshiftoss/market-service-v3.0.0) (2022-05-10)
+
+
+### Performance Improvements
+
+* **marketService:** replace caip properties with their high-level counterparts ([#607](https://github.com/shapeshift/lib/issues/607)) ([85a7cd2](https://github.com/shapeshift/lib/commit/85a7cd2b7004b425badc7c965385553fe9823ce8))
+
+
+### BREAKING CHANGES
+
+* **marketService:** updates the market service with caip-free types and vernacular.
+
+* chore: use local FindByAssetIdMarketType
+
+* chore: do not import from source
+
+Co-authored-by: kaladinlight <35275952+kaladinlight@users.noreply.github.com>
+
+# [@shapeshiftoss/market-service-v2.3.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.2.3...@shapeshiftoss/market-service-v2.3.0) (2022-05-06)
+
+
+### Features
+
+* **caip:** flatten exports ([#560](https://github.com/shapeshift/lib/issues/560)) ([e326522](https://github.com/shapeshift/lib/commit/e3265223dca3c2126b2822395353f6650c4b0342))
+
+# [@shapeshiftoss/market-service-v2.2.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.2.2...@shapeshiftoss/market-service-v2.2.3) (2022-05-05)
+
+# [@shapeshiftoss/market-service-v2.2.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.2.1...@shapeshiftoss/market-service-v2.2.2) (2022-05-03)
+
+# [@shapeshiftoss/market-service-v2.2.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.2.0...@shapeshiftoss/market-service-v2.2.1) (2022-05-02)
+
+
+### Bug Fixes
+
+* unbreak lib build ([#588](https://github.com/shapeshift/lib/issues/588)) ([bff0f3d](https://github.com/shapeshift/lib/commit/bff0f3d351f09ae9693b6b173782e8d8671ca3e4))
+* vscode tsconfig errors ([#577](https://github.com/shapeshift/lib/issues/577)) ([50138d0](https://github.com/shapeshift/lib/commit/50138d07b55b730f3bee68fae80414dc6578ee2a))
+
+# [@shapeshiftoss/market-service-v2.2.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.1.2...@shapeshiftoss/market-service-v2.2.0) (2022-04-20)
+
+
+### Features
+
+* fiat to fiat ([#495](https://github.com/shapeshift/lib/issues/495)) ([15dc620](https://github.com/shapeshift/lib/commit/15dc6204a72f82466aeff53b5bf2fe7078f88f15))
+
+# [@shapeshiftoss/market-service-v2.1.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.1.1...@shapeshiftoss/market-service-v2.1.2) (2022-03-29)
+
+# [@shapeshiftoss/market-service-v2.1.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.1.0...@shapeshiftoss/market-service-v2.1.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* fix yearn sdk instantiation ([#481](https://github.com/shapeshift/lib/issues/481)) ([fac8a33](https://github.com/shapeshift/lib/commit/fac8a339f193813e9074953f38d27fbf6b3ea6df))
+
+# [@shapeshiftoss/market-service-v2.1.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.0.5...@shapeshiftoss/market-service-v2.1.0) (2022-03-21)
+
+
+### Features
+
+* implement Foxy asset & market data ([#455](https://github.com/shapeshift/lib/issues/455)) ([0d44ab9](https://github.com/shapeshift/lib/commit/0d44ab931153cffab81a923f24814e41a2f898ba)), closes [#453](https://github.com/shapeshift/lib/issues/453)
+
+# [@shapeshiftoss/market-service-v2.0.5](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.0.4...@shapeshiftoss/market-service-v2.0.5) (2022-03-17)
+
+# [@shapeshiftoss/market-service-v2.0.4](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.0.3...@shapeshiftoss/market-service-v2.0.4) (2022-03-16)
+
+
+### Bug Fixes
+
+* update json rpc ([#442](https://github.com/shapeshift/lib/issues/442)) ([abfb16c](https://github.com/shapeshift/lib/commit/abfb16c3d28fa40bbb20e9834d95dca9d13e008a))
+
+# [@shapeshiftoss/market-service-v2.0.3](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.0.2...@shapeshiftoss/market-service-v2.0.3) (2022-03-14)
+
+
+### Bug Fixes
+
+* osmosis chart range data ([#423](https://github.com/shapeshift/lib/issues/423)) ([d202cee](https://github.com/shapeshift/lib/commit/d202cee9b3b807eaa3a5d5a8df2d27d1835a19c6))
+
+# [@shapeshiftoss/market-service-v2.0.2](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.0.1...@shapeshiftoss/market-service-v2.0.2) (2022-03-07)
+
+
+### Bug Fixes
+
+* fix osmosis charts ([#422](https://github.com/shapeshift/lib/issues/422)) ([0b4f5c4](https://github.com/shapeshift/lib/commit/0b4f5c4a97d5489ef03c253376e0170489ba4f5f))
+
+# [@shapeshiftoss/market-service-v2.0.1](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v2.0.0...@shapeshiftoss/market-service-v2.0.1) (2022-03-03)
+
+# [@shapeshiftoss/market-service-v2.0.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v1.13.0...@shapeshiftoss/market-service-v2.0.0) (2022-03-03)
+
+
+### Code Refactoring
+
+* remove contract types and  make assetnamespace and assetreference required fields ([#410](https://github.com/shapeshift/lib/issues/410)) ([b12bbf3](https://github.com/shapeshift/lib/commit/b12bbf39f55e5d87775def96c2ca7ce05abff2ee))
+
+
+### BREAKING CHANGES
+
+* remove ContractTypes
+
+For CAIP19 we will use AssetNamespace instead
+
+* refactor(swapper): use AssetNamespace instead of ContractTypes
+
+* feat(caip): caip19 requires assetNamespace and assetReference
+* removed contractType and tokenId
+
+assetNamespace and assetReference are used instead and are required
+
+* refactor(asset-service): use AssetNamespace instead of ContractTypes
+
+* refactor(chain-adapters): use assetNamespace and assetReference
+
+For CAIP19, stop relying on default assets
+
+* refactor(swapper): use assetReference instead of tokenId
+
+* refactor(market-data): use assetReference instead of tokenId
+
+* Update packages/caip/README.md
+
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
+* refactor(asset-service): updated ERC20 strings to lowercase
+
+Co-authored-by: Chris Thompson <chris@thompson-web.org>
+Co-authored-by: 0xdef1cafe <88504456+0xdef1cafe@users.noreply.github.com>
+
+# [@shapeshiftoss/market-service-v1.13.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v1.12.0...@shapeshiftoss/market-service-v1.13.0) (2022-03-03)
+
+
+### Features
+
+* osmosis market service ([#394](https://github.com/shapeshift/lib/issues/394)) ([cd613e1](https://github.com/shapeshift/lib/commit/cd613e133f76c00324b5d35fe75ba1ee164f82d7))
+
 # [@shapeshiftoss/market-service-v1.12.0](https://github.com/shapeshift/lib/compare/@shapeshiftoss/market-service-v1.11.3...@shapeshiftoss/market-service-v1.12.0) (2022-02-24)
 
 

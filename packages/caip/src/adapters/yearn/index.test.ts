@@ -1,28 +1,38 @@
-import { ChainTypes, ContractTypes, NetworkTypes } from '@shapeshiftoss/types'
 import toLower from 'lodash/toLower'
 
-import { toCAIP19 } from './../../caip19/caip19'
-import { CAIP19ToYearn, yearnToCAIP19 } from '.'
+import { toAssetId } from '../../assetId/assetId'
+import { CHAIN_NAMESPACE, CHAIN_REFERENCE } from '../../constants'
+import { assetIdToYearn, yearnToAssetId } from '.'
 
-describe('yearn adapter', () => {
-  describe('yearnToCAIP19', () => {
-    it('can get CAIP19 id for yvUSDC 0.3.0', () => {
-      const chain = ChainTypes.Ethereum
-      const network = NetworkTypes.MAINNET
-      const contractType = ContractTypes.ERC20
+describe('adapters:yearn', () => {
+  describe('yearnToAssetId', () => {
+    it('can get AssetId id for yvUSDC 0.3.0', () => {
+      const chainNamespace = CHAIN_NAMESPACE.Ethereum
+      const chainReference = CHAIN_REFERENCE.EthereumMainnet
+      const assetNamespace = 'erc20'
       const checksumAddress = '0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9'
-      const caip19 = toCAIP19({ chain, network, contractType, tokenId: toLower(checksumAddress) })
-      expect(yearnToCAIP19(checksumAddress)).toEqual(caip19)
+      const assetId = toAssetId({
+        chainNamespace,
+        chainReference,
+        assetNamespace,
+        assetReference: toLower(checksumAddress)
+      })
+      expect(yearnToAssetId(checksumAddress)).toEqual(assetId)
     })
   })
-  describe('CAIP19ToYearn', () => {
+  describe('AssetIdToYearn', () => {
     it('can get coincap id for yvUSDC 0.3.0', () => {
-      const chain = ChainTypes.Ethereum
-      const network = NetworkTypes.MAINNET
-      const contractType = ContractTypes.ERC20
+      const chainNamespace = CHAIN_NAMESPACE.Ethereum
+      const chainReference = CHAIN_REFERENCE.EthereumMainnet
+      const assetNamespace = 'erc20'
       const checksumAddress = '0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9'
-      const caip19 = toCAIP19({ chain, network, contractType, tokenId: toLower(checksumAddress) })
-      expect(CAIP19ToYearn(caip19)).toEqual(checksumAddress)
+      const assetId = toAssetId({
+        chainNamespace,
+        chainReference,
+        assetNamespace,
+        assetReference: toLower(checksumAddress)
+      })
+      expect(assetIdToYearn(assetId)).toEqual(checksumAddress)
     })
   })
 })

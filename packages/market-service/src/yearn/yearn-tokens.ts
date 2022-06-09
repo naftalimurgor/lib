@@ -1,14 +1,10 @@
-import { adapters } from '@shapeshiftoss/caip'
-import { toCAIP19 } from '@shapeshiftoss/caip/dist/caip19/caip19'
+import { adapters, CHAIN_NAMESPACE, CHAIN_REFERENCE, toAssetId } from '@shapeshiftoss/caip'
 import {
-  ChainTypes,
-  ContractTypes,
   FindAllMarketArgs,
   HistoryData,
   MarketCapResult,
   MarketData,
-  MarketDataArgs,
-  NetworkTypes
+  MarketDataArgs
 } from '@shapeshiftoss/types'
 import { ChainId, Token, Yearn } from '@yfi/sdk'
 import uniqBy from 'lodash/uniqBy'
@@ -18,7 +14,7 @@ import { RATE_LIMIT_THRESHOLDS_PER_MINUTE } from '../config'
 import { bnOrZero } from '../utils/bignumber'
 import { createRateLimiter } from '../utils/rateLimiters'
 
-const rateLimiter = createRateLimiter(RATE_LIMIT_THRESHOLDS_PER_MINUTE.YEARN)
+const rateLimiter = createRateLimiter(RATE_LIMIT_THRESHOLDS_PER_MINUTE.DEFAULT)
 
 type YearnTokenMarketCapServiceArgs = {
   yearnSdk: Yearn<ChainId>
@@ -38,7 +34,7 @@ export class YearnTokenMarketCapService implements MarketService {
     this.yearnSdk = args.yearnSdk
   }
 
-  findAll = async (args?: FindAllMarketArgs) => {
+  async findAll(args?: FindAllMarketArgs) {
     try {
       const argsToUse = { ...this.defaultGetByMarketCapArgs, ...args }
       const response = await Promise.allSettled([
@@ -58,13 +54,13 @@ export class YearnTokenMarketCapService implements MarketService {
       const tokens = uniqueTokens.slice(0, argsToUse.count)
 
       return tokens.reduce((acc, token) => {
-        const caip19: string = toCAIP19({
-          chain: ChainTypes.Ethereum,
-          network: NetworkTypes.MAINNET,
-          contractType: ContractTypes.ERC20,
-          tokenId: token.address
+        const _assetId: string = toAssetId({
+          chainNamespace: CHAIN_NAMESPACE.Ethereum,
+          chainReference: CHAIN_REFERENCE.EthereumMainnet,
+          assetNamespace: 'erc20',
+          assetReference: token.address
         })
-        acc[caip19] = {
+        acc[_assetId] = {
           price: bnOrZero(token.priceUsdc).div(`1e+${USDC_PRECISION}`).toString(),
           // TODO: figure out how to get these values.
           marketCap: '0',
@@ -80,8 +76,8 @@ export class YearnTokenMarketCapService implements MarketService {
     }
   }
 
-  findByCaip19 = async ({ caip19 }: MarketDataArgs): Promise<MarketData | null> => {
-    const address = adapters.CAIP19ToYearn(caip19)
+  async findByAssetId({ assetId: _assetId }: MarketDataArgs): Promise<MarketData | null> {
+    const address = adapters.assetIdToYearn(_assetId)
     if (!address) return null
     try {
       // the yearnSdk caches the response to all of these calls and returns the cache if found.
@@ -113,11 +109,11 @@ export class YearnTokenMarketCapService implements MarketService {
       }
     } catch (e) {
       console.warn(e)
-      throw new Error('YearnMarketService(findByCaip19): error fetching market data')
+      throw new Error('YearnMarketService(findByAssetId): error fetching market data')
     }
   }
 
-  findPriceHistoryByCaip19 = async (): Promise<HistoryData[]> => {
+  async findPriceHistoryByAssetId(): Promise<HistoryData[]> {
     // TODO: figure out a way to get zapper, ironbank and underlying token historical data.
     return []
   }

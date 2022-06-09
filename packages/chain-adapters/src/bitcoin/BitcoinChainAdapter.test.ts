@@ -10,10 +10,12 @@ import { HDWallet } from '@shapeshiftoss/hdwallet-core'
 import { NativeAdapterArgs, NativeHDWallet } from '@shapeshiftoss/hdwallet-native'
 import { BIP44Params, chainAdapters, ChainTypes, UtxoAccountType } from '@shapeshiftoss/types'
 
+import { ChainAdapterArgs } from '../utxo/UTXOBaseAdapter'
 import * as bitcoin from './BitcoinChainAdapter'
 
 const testMnemonic = 'alcohol woman abuse must during monitor noble actual mixed trade anger aisle'
 const VALID_CHAIN_ID = 'bip122:000000000019d6689c085ae165831e93'
+const VALID_ASSET_ID = 'bip122:000000000019d6689c085ae165831e93/slip44:0'
 
 const getWallet = async (): Promise<HDWallet> => {
   const nativeAdapterArgs: NativeAdapterArgs = {
@@ -132,7 +134,7 @@ const getNetworkFeesMockedResponse = {
 }
 
 describe('BitcoinChainAdapter', () => {
-  let args: bitcoin.ChainAdapterArgs = {} as any
+  let args: ChainAdapterArgs = {} as any
 
   beforeEach(() => {
     args = {
@@ -140,12 +142,13 @@ describe('BitcoinChainAdapter', () => {
         http: {} as any,
         ws: {} as any
       },
-      coinName: 'Bitcoin'
+      coinName: 'Bitcoin',
+      chainId: 'bip122:000000000019d6689c085ae165831e93'
     }
   })
 
   describe('constructor', () => {
-    it('should return chainAdapter with default Bitcoin chainId if called with no chainId', () => {
+    it('should return chainAdapter with Bitcoin chainId', () => {
       const adapter = new bitcoin.ChainAdapter(args)
       const chainId = adapter.getChainId()
       expect(chainId).toEqual(VALID_CHAIN_ID)
@@ -156,9 +159,26 @@ describe('BitcoinChainAdapter', () => {
       const chainId = adapter.getChainId()
       expect(chainId).toEqual('bip122:000000000933ea01ad0ee984209779ba')
     })
+    it('should return chainAdapter with Bitcoin assetId', () => {
+      const adapter = new bitcoin.ChainAdapter(args)
+      const assetId = adapter.getAssetId()
+      expect(assetId).toEqual(VALID_ASSET_ID)
+    })
     it('should throw if called with invalid chainId', () => {
       args.chainId = 'INVALID_CHAINID'
-      expect(() => new bitcoin.ChainAdapter(args)).toThrow(/The ChainID (.+) is not supported/)
+      expect(() => new bitcoin.ChainAdapter(args)).toThrow(
+        'Bitcoin chainId INVALID_CHAINID not supported'
+      )
+    })
+    it('should throw if called with non bitcoin chainId', () => {
+      args.chainId = 'eip155:1'
+      expect(() => new bitcoin.ChainAdapter(args)).toThrow('Bitcoin chainId eip155:1 not supported')
+    })
+    it('should use default chainId if no arg chainId provided.', () => {
+      args.chainId = undefined
+      const adapter = new bitcoin.ChainAdapter(args)
+      const chainId = adapter.getChainId()
+      expect(chainId).toEqual('bip122:000000000019d6689c085ae165831e93')
     })
   })
 
@@ -173,7 +193,6 @@ describe('BitcoinChainAdapter', () => {
   describe('getAccount', () => {
     it('should return account info for a specified address', async () => {
       args.providers.http = {
-        getInfo: jest.fn().mockResolvedValue({ data: { network: 'mainnet' } }),
         getAccount: jest.fn().mockResolvedValue({
           data: {
             pubkey: '1EjpFGTWJ9CGRJUMA3SdQSdigxM31aXAFx',
@@ -191,8 +210,8 @@ describe('BitcoinChainAdapter', () => {
         pubkey: '1EjpFGTWJ9CGRJUMA3SdQSdigxM31aXAFx',
         chain: ChainTypes.Bitcoin,
         balance: '150',
-        caip2: 'bip122:000000000019d6689c085ae165831e93',
-        caip19: 'bip122:000000000019d6689c085ae165831e93/slip44:0',
+        chainId: 'bip122:000000000019d6689c085ae165831e93',
+        assetId: 'bip122:000000000019d6689c085ae165831e93/slip44:0',
         chainSpecific: {
           addresses: [],
           nextChangeAddressIndex: 0,
@@ -206,7 +225,6 @@ describe('BitcoinChainAdapter', () => {
 
     it('should throw for an unspecified address', async () => {
       args.providers.http = {
-        getInfo: jest.fn().mockResolvedValue({ data: { network: 'mainnet' } }),
         getAccount: jest.fn<any, any>().mockResolvedValue({
           pubkey: '1EjpFGTWJ9CGRJUMA3SdQSdigxM31aXAFx',
           balance: '0'
@@ -215,71 +233,7 @@ describe('BitcoinChainAdapter', () => {
 
       const adapter = new bitcoin.ChainAdapter(args)
       await expect(adapter.getAccount('')).rejects.toThrow(
-        'BitcoinChainAdapter: pubkey parameter is not defined'
-      )
-    })
-  })
-
-  describe('getTxHistory', () => {
-    it('should return tx history for a specified address', async () => {
-      args.providers.http = {
-        getTxHistory: jest.fn().mockResolvedValue({
-          data: {
-            page: 1,
-            totalPages: 1,
-            txs: 1,
-            transactions: [
-              {
-                network: 'MAINNET',
-                chain: 'bitcoin',
-                symbol: 'BTC',
-                txid: '123',
-                status: 'confirmed',
-                from: 'abc',
-                value: '1337',
-                fee: '1'
-              }
-            ]
-          }
-        })
-      } as any
-
-      const adapter = new bitcoin.ChainAdapter(args)
-      const pubkey = '1EjpFGTWJ9CGRJUMA3SdQSdigxM31aXAFx'
-      await expect(adapter.getTxHistory({ pubkey })).resolves.toStrictEqual({
-        page: 1,
-        totalPages: 1,
-        txs: 1,
-        transactions: [
-          {
-            network: 'MAINNET',
-            chain: 'bitcoin',
-            symbol: 'BTC',
-            txid: '123',
-            status: 'confirmed',
-            from: 'abc',
-            value: '1337',
-            fee: '1',
-            chainSpecific: {
-              opReturnData: ''
-            }
-          }
-        ]
-      })
-      expect(args.providers.http.getTxHistory).toHaveBeenCalledTimes(1)
-    })
-
-    it('should fail for an unspecified address', async () => {
-      args.providers.http = {
-        getTxHistory: jest.fn().mockResolvedValue({
-          data: {}
-        })
-      } as any
-
-      const adapter = new bitcoin.ChainAdapter(args)
-      const pubkey = ''
-      await expect(adapter.getTxHistory({ pubkey })).rejects.toThrow(
-        'pubkey parameter is not defined'
+        'UTXOBaseAdapter: pubkey parameter is not defined'
       )
     })
   })
@@ -289,7 +243,6 @@ describe('BitcoinChainAdapter', () => {
       const wallet: any = await getWallet()
 
       args.providers.http = {
-        getInfo: jest.fn().mockResolvedValue({ data: { network: 'mainnet' } }),
         getUtxos: jest.fn<any, any>().mockResolvedValue(getUtxosMockResponse),
         getTransaction: jest.fn<any, any>().mockResolvedValue(getTransactionMockResponse),
         getAccount: jest.fn().mockResolvedValue(getAccountMockResponse),
@@ -357,7 +310,6 @@ describe('BitcoinChainAdapter', () => {
       const wallet: any = await getWallet()
 
       args.providers.http = {
-        getInfo: jest.fn().mockResolvedValue({ data: { network: 'mainnet' } }),
         getUtxos: jest.fn<any, any>().mockResolvedValue(getUtxosMockResponse),
         getTransaction: jest.fn<any, any>().mockResolvedValue(getTransactionMockResponse),
         getAccount: jest.fn().mockResolvedValue(getAccountMockResponse),

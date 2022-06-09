@@ -1,15 +1,16 @@
 import { AssetService } from '@shapeshiftoss/asset-service'
 import { ChainAdapterManager } from '@shapeshiftoss/chain-adapters'
 import { NativeAdapterArgs, NativeHDWallet } from '@shapeshiftoss/hdwallet-native'
-import { Asset, ChainTypes, NetworkTypes, SwapperType } from '@shapeshiftoss/types'
+import { ChainTypes } from '@shapeshiftoss/types'
 import BigNumber from 'bignumber.js'
 import dotenv from 'dotenv'
 import readline from 'readline-sync'
 import Web3 from 'web3'
 
+import { SwapperType } from './api'
 import { SwapperManager } from './manager/SwapperManager'
+import { ThorchainSwapper } from './swappers/thorchain/ThorchainSwapper'
 import { ZrxSwapper } from './swappers/zrx/ZrxSwapper'
-
 dotenv.config()
 
 const {
@@ -17,7 +18,7 @@ const {
   UNCHAINED_WS_API = 'wss://localhost:31300',
   ETH_NODE_URL = 'http://localhost:3000',
   DEVICE_ID = 'device123',
-  MNEMONIC = 'salon adapt foil saddle orient make page zero cheese marble test catalog'
+  MNEMONIC = 'all all all all all all all all all all all all'
 } = process.env
 
 const toBaseUnit = (amount: BigNumber | string, precision: number): string => {
@@ -58,24 +59,11 @@ const main = async (): Promise<void> => {
     return
   }
 
-  const assetService = new AssetService('')
-  await assetService.initialize()
-  const assets = assetService.byNetwork(NetworkTypes.MAINNET)
+  const assetService = new AssetService()
+  const assetMap = assetService.getAll()
 
-  if (!assets) {
-    console.error('No assets found in asset service')
-    return
-  }
-
-  const assetMap = assets.reduce((acc, val) => {
-    if (val) {
-      acc[val.symbol] = val
-    }
-    return acc
-  }, {} as Record<string, Asset>)
-
-  const sellAsset = assetMap[sellSymbol] as Asset
-  const buyAsset = assetMap[buySymbol] as Asset
+  const sellAsset = assetMap[sellSymbol]
+  const buyAsset = assetMap[buySymbol]
 
   if (!sellAsset) {
     console.error(`No asset ${sellSymbol} found in asset service`)
@@ -99,30 +87,43 @@ const main = async (): Promise<void> => {
   const web3 = new Web3(web3Provider)
 
   const zrxSwapperDeps = { wallet, adapterManager, web3 }
+  const thorchainSwapperDeps = {
+    midgardUrl: 'https://midgard.thorchain.info/v2',
+    adapterManager: <ChainAdapterManager>{}
+  }
 
   const manager = new SwapperManager()
   const zrxSwapper = new ZrxSwapper(zrxSwapperDeps)
+  const thorchainSwapper = new ThorchainSwapper(thorchainSwapperDeps)
+  await thorchainSwapper.initialize()
   manager.addSwapper(SwapperType.Zrx, zrxSwapper)
-  const swapper = manager.getSwapper(SwapperType.Zrx)
+  manager.addSwapper(SwapperType.Thorchain, thorchainSwapper)
+  const swapper = await manager.getBestSwapper({
+    sellAssetId: 'eip155:1/slip44:60',
+    buyAssetId: 'eip155:1/erc20:0xc770eefad204b5180df6a14ee197d99d808ee52d'
+  })
+
+  if (!swapper) return
   const sellAmountBase = toBaseUnit(sellAmount, sellAsset.precision)
 
-  const quote = await swapper.buildQuoteTx({
-    input: {
+  let quote
+  try {
+    quote = await swapper.getTradeQuote({
       sellAsset,
       buyAsset,
       sellAmount: sellAmountBase,
       sellAssetAccountId: '0',
-      buyAssetAccountId: '0'
-    },
-    wallet
-  })
+      sendMax: false
+    })
+  } catch (e) {
+    console.error(e)
+  }
 
-  console.info('quote = ', JSON.stringify(quote))
-
-  if (!quote.success) {
-    console.error('Obtaining the quote failed: ', quote.statusReason)
+  if (!quote) {
     return
   }
+
+  console.info('quote = ', JSON.stringify(quote))
 
   const buyAmount = fromBaseUnit(quote.buyAmount || '0', buyAsset.precision)
 
@@ -132,7 +133,16 @@ const main = async (): Promise<void> => {
     } on ${swapper.getType()}? (y/n): `
   )
   if (answer === 'y') {
-    const txid = await swapper.executeQuote({ quote, wallet })
+    const trade = await swapper.buildTrade({
+      wallet,
+      buyAsset,
+      sendMax: false,
+      sellAmount: sellAmountBase,
+      sellAsset,
+      sellAssetAccountId: '0',
+      buyAssetAccountId: '0'
+    })
+    const txid = await swapper.executeTrade({ trade, wallet })
     console.info('broadcast tx with id: ', txid)
   }
 }

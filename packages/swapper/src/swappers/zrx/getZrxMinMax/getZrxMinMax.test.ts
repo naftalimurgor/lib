@@ -1,8 +1,8 @@
 jest.mock('../utils/zrxService')
 jest.mock('../utils/helpers/helpers')
 
+import { BTC, FOX, WETH } from '../../utils/test-data/assets'
 import { MAX_ZRX_TRADE } from '../utils/constants'
-import { BTC, FOX, WETH } from '../utils/test-data/assets'
 import { zrxService as mockZrxService } from '../utils/zrxService'
 import { getZrxMinMax } from './getZrxMinMax'
 ;(<jest.Mock<unknown>>mockZrxService.get).mockImplementation(() => ({
@@ -14,15 +14,12 @@ jest.mock('../utils/helpers/helpers', () => ({
 }))
 
 describe('getZrxMinMax', () => {
-  it('returns minimum, maximum, and minimumPrice', async () => {
-    const minMax = await getZrxMinMax({ sellAsset: FOX, buyAsset: WETH })
+  it('returns minimum and maximum', async () => {
+    const minMax = await getZrxMinMax(FOX, WETH)
     expect(minMax.minimum).toBe('1')
     expect(minMax.maximum).toBe(MAX_ZRX_TRADE)
-    expect(minMax.minimumPrice).toBe('100')
   })
   it('fails on non eth asset', async () => {
-    await expect(getZrxMinMax({ sellAsset: BTC, buyAsset: WETH })).rejects.toThrow(
-      'ZrxError:getZrxMinMax - must be eth assets'
-    )
+    await expect(getZrxMinMax(BTC, WETH)).rejects.toThrow('[getZrxMinMax]')
   })
 })

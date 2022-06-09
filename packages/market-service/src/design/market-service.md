@@ -4,7 +4,7 @@ Market Service acts as an abstraction layer over multiple cloud market providers
 of this service is to find all market data, find market data for a single asset, find price history data
 for all assets, and manage multiple cloud market data providers for asset market data. The design is meant to
 be redundant and extensible so that assets not found on one provider can be found on another supported provider.
-If one provider is unavailable, the manager should be able to fill in missing assets with the next redundant provder.
+If one provider is unavailable, the manager should be able to fill in missing assets with the next redundant provider.
 
 ## Manager
 
@@ -22,10 +22,10 @@ All prices, marketCaps and volumes are represented in US Dollars.
       pages?: number,
       perPage?: number
     ```
-  * returns an object keyed by caip19 with the following fields
+  * returns an object keyed by assetId with the following fields
     ```
       {
-        [caip19: string]: {
+        [assetId: string]: {
           marketSource: enum
           price: string
           marketCap: string
@@ -62,12 +62,12 @@ All prices, marketCaps and volumes are represented in US Dollars.
       }
     ```
 
-* `findByCaip19`
+* `findByAssetId`
   * Args
     ```
-      caip19: string
+      assetId: string
     ```
-  * returns an object keyed by caip19 with the following fields
+  * returns an object keyed by assetId with the following fields
     ```
       {
         marketSource: enum
@@ -75,6 +75,8 @@ All prices, marketCaps and volumes are represented in US Dollars.
         marketCap: string
         volume: string
         changePercent24Hr: number
+        supply?: string
+        maxSupply?: string
       }
     ```
 
@@ -86,13 +88,15 @@ All prices, marketCaps and volumes are represented in US Dollars.
         "marketCap": "1064743990968",
         "volume": "40098748439",
         "changePercent24Hr": -2.20386
+        "supply": "51395303.354399648976961361",
+        "maxSupply": "502526240.759422886301171305"
       }
     ```
 
-* `findPriceHistoryByCaip19`
+* `findPriceHistoryByAssetId`
   * Args
     ```
-      caip19: string
+      assetId: string
       timeframe: enum {
         HOUR = '1H',
         DAY = '24H',

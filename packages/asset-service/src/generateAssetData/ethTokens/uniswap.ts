@@ -1,15 +1,9 @@
-import { caip2, caip19 } from '@shapeshiftoss/caip'
-import {
-  AssetDataSource,
-  ChainTypes,
-  ContractTypes,
-  NetworkTypes,
-  TokenAsset
-} from '@shapeshiftoss/types'
+import { ethChainId as chainId, fromAssetId, toAssetId } from '@shapeshiftoss/caip'
+import { Asset, ChainTypes, NetworkTypes } from '@shapeshiftoss/types'
 import axios from 'axios'
 import lodash from 'lodash'
 
-import { tokensToOverride } from './overrides'
+import { overrideTokens } from './overrides'
 
 type UniswapToken = {
   chainId: number
@@ -28,19 +22,15 @@ type UniswapTokenData = {
   tokens: UniswapToken[]
 }
 
-export async function getUniswapTokens(): Promise<TokenAsset[]> {
+export async function getUniswapTokens(): Promise<Asset[]> {
   const { data: uniswapTokenData } = await axios.get<UniswapTokenData>(
     'https://tokens.coingecko.com/uniswap/all.json'
   )
 
-  const chain = ChainTypes.Ethereum
-  const network = NetworkTypes.MAINNET
-  const contractType = ContractTypes.ERC20
-
-  const tokens = uniswapTokenData.tokens.reduce<TokenAsset[]>((acc, token) => {
-    const overrideToken: TokenAsset | undefined = lodash.find(
-      tokensToOverride,
-      (override: TokenAsset) => override.tokenId === token.address
+  return uniswapTokenData.tokens.reduce<Asset[]>((acc, token) => {
+    const overrideToken: Asset | undefined = lodash.find(
+      overrideTokens,
+      (override: Asset) => fromAssetId(override.assetId).assetReference === token.address
     )
 
     if (overrideToken) {
@@ -48,30 +38,27 @@ export async function getUniswapTokens(): Promise<TokenAsset[]> {
       return acc
     }
 
-    const tokenId = token.address.toLowerCase()
+    const assetReference = token.address.toLowerCase()
 
-    if (!tokenId) {
-      // if no token address, we can't deal with this asset.
-      return acc
-    }
-    const result: TokenAsset = {
-      caip19: caip19.toCAIP19({ chain, network, contractType, tokenId }),
-      caip2: caip2.toCAIP2({ chain, network }),
-      dataSource: AssetDataSource.CoinGecko,
+    // if no token address, we can't deal with this asset.
+    if (!assetReference) return acc
+
+    const assetNamespace = 'erc20'
+    const result: Asset = {
+      assetId: toAssetId({ chainId, assetNamespace, assetReference }),
+      chainId,
       name: token.name,
       precision: token.decimals,
-      tokenId,
-      contractType: ContractTypes.ERC20,
       color: '#FFFFFF', // TODO
-      secondaryColor: '#FFFFFF', // TODO
       icon: token.logoURI,
-      sendSupport: true,
-      receiveSupport: true,
-      symbol: token.symbol
+      symbol: token.symbol,
+      chain: ChainTypes.Ethereum,
+      network: NetworkTypes.MAINNET,
+      explorer: 'https://etherscan.io',
+      explorerAddressLink: 'https://etherscan.io/address/',
+      explorerTxLink: 'https://etherscan.io/tx/'
     }
     acc.push(result)
     return acc
   }, [])
-
-  return tokens
 }

@@ -1,76 +1,126 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// no-unused-vars is temporarily disabled until more functions are implemented
-import { AssetNamespace, CAIP2, caip2, caip19 } from '@shapeshiftoss/caip'
+import { AssetId, ChainId } from '@shapeshiftoss/caip'
 import { CosmosSignTx } from '@shapeshiftoss/hdwallet-core'
 import { BIP44Params, chainAdapters, ChainTypes } from '@shapeshiftoss/types'
-import { cosmos } from '@shapeshiftoss/unchained-client'
-import WAValidator from 'multicoin-address-validator'
+import * as unchained from '@shapeshiftoss/unchained-client'
+import { bech32 } from 'bech32'
 
 import { ChainAdapter as IChainAdapter } from '../api'
-import { ChainAdapter } from '../bitcoin'
 import { ErrorHandler } from '../error/ErrorHandler'
+import { getStatus, getType, toRootDerivationPath } from '../utils'
 
 export type CosmosChainTypes = ChainTypes.Cosmos | ChainTypes.Osmosis
 
 export interface ChainAdapterArgs {
-  chainId?: CAIP2
+  chainId?: ChainId
   providers: {
-    http: cosmos.api.V1Api
-    // unchained-client 5.1.1 does not have a websocket client for cosmos
+    http: unchained.cosmos.V1Api | unchained.osmosis.V1Api
+    ws: unchained.ws.Client<unchained.cosmos.Tx> | unchained.ws.Client<unchained.osmosis.Tx>
   }
   coinName: string
 }
 
+const CHAIN_TO_BECH32_PREFIX_MAPPING = {
+  [ChainTypes.Cosmos]: 'cosmos',
+  [ChainTypes.Osmosis]: 'osmo'
+}
+
+const transformValidator = (
+  validator: unchained.cosmos.Validator
+): chainAdapters.cosmos.Validator => ({
+  address: validator.address,
+  moniker: validator.moniker,
+  tokens: validator.tokens,
+  commission: validator.commission.rate,
+  apr: validator.apr
+})
+
 export abstract class CosmosSdkBaseAdapter<T extends CosmosChainTypes> implements IChainAdapter<T> {
-  protected readonly chainId: CAIP2
-  protected readonly supportedChainIds: CAIP2[]
+  protected readonly chainId: ChainId
+  protected readonly assetId: AssetId // This is the AssetId for native token on the chain (ATOM/OSMO/etc)
+  protected readonly supportedChainIds: ChainId[]
   protected readonly coinName: string
   protected readonly providers: {
-    http: cosmos.api.V1Api
+    http: unchained.cosmos.V1Api | unchained.osmosis.V1Api
+    ws: unchained.ws.Client<unchained.cosmos.Tx> | unchained.ws.Client<unchained.osmosis.Tx>
   }
 
-  public static readonly defaultBIP44Params: BIP44Params = {
-    purpose: 44,
-    coinType: 118,
-    accountNumber: 0
-  }
+  protected parser: unchained.cosmos.TransactionParser
+
+  static defaultBIP44Params: BIP44Params
 
   protected constructor(args: ChainAdapterArgs) {
     if (args.chainId && this.supportedChainIds.includes(args.chainId)) {
       this.chainId = args.chainId
     }
+
+    CosmosSdkBaseAdapter.defaultBIP44Params = (<typeof CosmosSdkBaseAdapter>(
+      this.constructor
+    )).defaultBIP44Params
+
     this.providers = args.providers
   }
 
   abstract getType(): T
 
-  getChainId(): CAIP2 {
+  getChainId(): ChainId {
     return this.chainId
   }
 
-  getCaip2(): CAIP2 {
-    return this.chainId
-  }
+  abstract getFeeAssetId(): AssetId
 
   async getAccount(pubkey: string): Promise<chainAdapters.Account<T>> {
     try {
-      const caip = this.getCaip2()
-      const { chain, network } = caip2.fromCAIP2(caip)
       const { data } = await this.providers.http.getAccount({ pubkey })
+
+      const delegations = data.delegations.map<chainAdapters.cosmos.Delegation>((delegation) => ({
+        assetId: this.assetId,
+        amount: delegation.balance.amount,
+        validator: transformValidator(delegation.validator)
+      }))
+
+      const redelegations = data.redelegations.map<chainAdapters.cosmos.Redelegation>(
+        (redelegation) => ({
+          destinationValidator: transformValidator(redelegation.destinationValidator),
+          sourceValidator: transformValidator(redelegation.sourceValidator),
+          entries: redelegation.entries.map<chainAdapters.cosmos.RedelegationEntry>((entry) => ({
+            assetId: this.assetId,
+            completionTime: Number(entry.completionTime),
+            amount: entry.balance
+          }))
+        })
+      )
+
+      const undelegations = data.unbondings.map<chainAdapters.cosmos.Undelegation>(
+        (undelegation) => ({
+          validator: transformValidator(undelegation.validator),
+          entries: undelegation.entries.map<chainAdapters.cosmos.UndelegationEntry>((entry) => ({
+            assetId: this.assetId,
+            completionTime: Number(entry.completionTime),
+            amount: entry.balance.amount
+          }))
+        })
+      )
+
+      const rewards = data.rewards.map<chainAdapters.cosmos.ValidatorReward>((validatorReward) => ({
+        validator: transformValidator(validatorReward.validator),
+        rewards: validatorReward.rewards.map<chainAdapters.cosmos.Reward>((reward) => ({
+          assetId: this.assetId,
+          amount: reward.amount
+        }))
+      }))
 
       return {
         balance: data.balance,
-        caip2: caip,
-        // This is the caip19 for native token on the chain (ATOM/OSMO/etc)
-        caip19: caip19.toCAIP19({
-          chain,
-          network,
-          assetNamespace: AssetNamespace.Slip44,
-          assetReference: '118'
-        }),
+        chainId: this.chainId,
+        assetId: this.assetId,
         chain: this.getType(),
         chainSpecific: {
-          sequence: data.sequence
+          accountNumber: data.accountNumber.toString(),
+          delegations,
+          redelegations,
+          undelegations,
+          rewards,
+          sequence: data.sequence.toString()
         },
         pubkey: data.pubkey
         /* TypeScript can't guarantee the correct type for the chainSpecific field because of the generic return type.
@@ -83,7 +133,7 @@ export abstract class CosmosSdkBaseAdapter<T extends CosmosChainTypes> implement
   }
 
   buildBIP44Params(params: Partial<BIP44Params>): BIP44Params {
-    return { ...ChainAdapter.defaultBIP44Params, ...params }
+    return { ...CosmosSdkBaseAdapter.defaultBIP44Params, ...params }
   }
 
   async getTxHistory(
@@ -91,27 +141,44 @@ export abstract class CosmosSdkBaseAdapter<T extends CosmosChainTypes> implement
   ): Promise<chainAdapters.TxHistoryResponse<T>> {
     try {
       const { data } = await this.providers.http.getTxHistory({
-        pubkey: input.pubkey
+        pubkey: input.pubkey,
+        pageSize: input.pageSize,
+        cursor: input.cursor
       })
 
-      throw new Error('Method not implemented.')
-      // return {
-      //   page: data.page,
-      //   totalPages: data.totalPages,
-      //   transactions: data.txs.map((tx) => ({
-      //     /*
-      //     missing properties from cosmos.api.Tx
-      //       status: string
-      //       from: string
-      //       to?: string
-      //       confirmations?: number
-      //      */
-      //     chain: caip2.fromCAIP2(this.getCaip2()).chain,
-      //     network: caip2.fromCAIP2(this.getCaip2()).network,
-      //     coinName: this.coinName
-      //   })),
-      //   txs: data.txs.length
-      // }
+      const txs = await Promise.all(
+        data.txs.map(async (tx) => {
+          const parsedTx = await this.parser.parse(tx, input.pubkey)
+
+          return {
+            address: input.pubkey,
+            blockHash: parsedTx.blockHash,
+            blockHeight: parsedTx.blockHeight,
+            blockTime: parsedTx.blockTime,
+            chainId: parsedTx.chainId,
+            chain: this.getType(),
+            confirmations: parsedTx.confirmations,
+            txid: parsedTx.txid,
+            fee: parsedTx.fee,
+            status: getStatus(parsedTx.status),
+            tradeDetails: parsedTx.trade,
+            transfers: parsedTx.transfers.map((transfer) => ({
+              assetId: transfer.assetId,
+              from: transfer.from,
+              to: transfer.to,
+              type: getType(transfer.type),
+              value: transfer.totalValue
+            })),
+            data: parsedTx.data
+          }
+        })
+      )
+
+      return {
+        cursor: data.cursor,
+        pubkey: input.pubkey,
+        transactions: txs
+      }
     } catch (err) {
       return ErrorHandler(err)
     }
@@ -132,10 +199,12 @@ export abstract class CosmosSdkBaseAdapter<T extends CosmosChainTypes> implement
   ): Promise<string>
 
   async broadcastTransaction(hex: string): Promise<string> {
-    const { data } = await this.providers.http.sendTx({
-      body: { hex }
-    })
-    return data
+    try {
+      const { data } = await this.providers.http.sendTx({ body: { rawTx: hex } })
+      return data
+    } catch (err) {
+      return ErrorHandler(err)
+    }
   }
 
   abstract signAndBroadcastTransaction(
@@ -143,67 +212,95 @@ export abstract class CosmosSdkBaseAdapter<T extends CosmosChainTypes> implement
   ): Promise<string>
 
   async validateAddress(address: string): Promise<chainAdapters.ValidAddressResult> {
-    const isValidAddress = WAValidator.validate(address, this.getType())
-    if (isValidAddress) return { valid: true, result: chainAdapters.ValidAddressResultType.Valid }
-    return { valid: false, result: chainAdapters.ValidAddressResultType.Invalid }
+    const chain = this.getType()
+    try {
+      const { prefix } = bech32.decode(address)
+
+      if (CHAIN_TO_BECH32_PREFIX_MAPPING[chain] !== prefix) {
+        throw new Error(`Invalid address ${address} for ChainType: ${chain}`)
+      }
+
+      return {
+        valid: true,
+        result: chainAdapters.ValidAddressResultType.Valid
+      }
+    } catch (err) {
+      console.error(err)
+      return { valid: false, result: chainAdapters.ValidAddressResultType.Invalid }
+    }
   }
 
   async subscribeTxs(
     input: chainAdapters.SubscribeTxsInput,
-    onMessage: (msg: chainAdapters.SubscribeTxsMessage<T>) => void,
-    onError?: (err: chainAdapters.SubscribeError) => void
+    onMessage: (msg: chainAdapters.Transaction<T>) => void,
+    onError: (err: chainAdapters.SubscribeError) => void
   ): Promise<void> {
-    throw new Error('Method not implemented.')
-    // const { wallet, bip44Params = ChainAdapter.defaultBIP44Params } = input
-    //
-    // const address = await this.getAddress({ wallet, bip44Params })
-    // const subscriptionId = toRootDerivationPath(bip44Params)
-    //
-    // await this.providers.ws.subscribeTxs(
-    //   subscriptionId,
-    //   { topic: 'txs', addresses: [address] },
-    //   (msg: chainAdapters.SubscribeTxsMessage<T>) => {
-    //     const transfers = msg.transfers.map<chainAdapters.TxTransfer>((transfer) => ({
-    //       caip19: transfer.caip19,
-    //       from: transfer.from,
-    //       to: transfer.to,
-    //       type: transfer.type,
-    //       value: transfer.value
-    //     }))
-    //
-    //     onMessage({
-    //       address: msg.address,
-    //       blockHash: msg.blockHash,
-    //       blockHeight: msg.blockHeight,
-    //       blockTime: msg.blockTime,
-    //       caip2: msg.caip2,
-    //       chain: this.getType(),
-    //       confirmations: msg.confirmations,
-    //       fee: msg.fee,
-    //       status: msg.status,
-    //       tradeDetails: msg.tradeDetails,
-    //       transfers,
-    //       txid: msg.txid
-    //     })
-    //   },
-    //   (err: chainAdapters.SubscribeError) => onError?.({ message: err.message })
-    // )
+    const { wallet, bip44Params = CosmosSdkBaseAdapter.defaultBIP44Params } = input
+
+    const address = await this.getAddress({ wallet, bip44Params })
+    const subscriptionId = toRootDerivationPath(bip44Params)
+
+    await this.providers.ws.subscribeTxs(
+      subscriptionId,
+      { topic: 'txs', addresses: [address] },
+      async (msg) => {
+        const tx = await this.parser.parse(msg.data, msg.address)
+
+        onMessage({
+          address: tx.address,
+          blockHash: tx.blockHash,
+          blockHeight: tx.blockHeight,
+          blockTime: tx.blockTime,
+          chainId: tx.chainId,
+          chain: this.getType(),
+          confirmations: tx.confirmations,
+          fee: tx.fee,
+          status: getStatus(tx.status),
+          tradeDetails: tx.trade,
+          transfers: tx.transfers.map((transfer) => ({
+            assetId: transfer.assetId,
+            from: transfer.from,
+            to: transfer.to,
+            type: getType(transfer.type),
+            value: transfer.totalValue
+          })),
+          txid: tx.txid
+        })
+      },
+      (err) => onError({ message: err.message })
+    )
   }
 
   unsubscribeTxs(input?: chainAdapters.SubscribeTxsInput): void {
-    throw new Error('Method not implemented.')
-    // if (!input) return this.providers.ws.unsubscribeTxs()
-    //
-    // const { bip44Params = ChainAdapter.defaultBIP44Params } = input
-    // const subscriptionId = toRootDerivationPath(bip44Params)
-    //
-    // this.providers.ws.unsubscribeTxs(subscriptionId, {
-    //   topic: 'txs',
-    //   addresses: []
-    // })
+    if (!input) return this.providers.ws.unsubscribeTxs()
+
+    const { bip44Params = CosmosSdkBaseAdapter.defaultBIP44Params } = input
+    const subscriptionId = toRootDerivationPath(bip44Params)
+
+    this.providers.ws.unsubscribeTxs(subscriptionId, { topic: 'txs', addresses: [] })
   }
 
   closeTxs(): void {
-    throw new Error('Method not implemented.')
+    this.providers.ws.close('txs')
+  }
+
+  async getValidators(): Promise<Array<chainAdapters.cosmos.Validator>> {
+    try {
+      const { data } = await this.providers.http.getValidators()
+      return data.validators.map<chainAdapters.cosmos.Validator>((validator) =>
+        transformValidator(validator)
+      )
+    } catch (err) {
+      return ErrorHandler(err)
+    }
+  }
+
+  async getValidator(address: string): Promise<chainAdapters.cosmos.Validator> {
+    try {
+      const { data: validator } = await this.providers.http.getValidator({ pubkey: address })
+      return transformValidator(validator)
+    } catch (err) {
+      return ErrorHandler(err)
+    }
   }
 }
